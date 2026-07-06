@@ -138,29 +138,29 @@ taskflow-academico/
 │ ▼                         ▼                                     │
 │ Faz login           Cria conta em                               │
 │               (email + senha)/registro                          │
-│ │ │ │
-│ └─────────┬───────────────┘ │
-│ │ │
-│ ▼ │
-│ Sessão criada ✅ │
-│ │ │
-│ ▼ │
-│ Página Inicial (/) - Lista de Tarefas │
-│ │ │
-│ ┌──────────────┼──────────────┐ │
-│ │ │ │ │
-│ ▼ ▼ ▼ │
-│ Criar Tarefa Ver/Editar Excluir │
-│ /cadastrar /tarefa/:id /deletar/:id │
-│ │ /editar/:id │ │
-│ └──────────────┼──────────────┘ │
-│ │ │
-│ ▼ │
-│ /logout │
-│ (destrói sessão) │
-│ │ │
-│ ▼ │
-│ Volta ao /login │
+│ │                         │                                     │
+│ └─────────┬───────────────┘                                     │
+│           │                                                     │
+│           ▼                                                     │
+│      Sessão criada                                              │
+│           │                                                     │
+│           ▼                                                     │
+│ Página Inicial (/) - Lista de Tarefas                           │
+│                │                                                │
+│ ┌──────────────┼──────────────┐                                 │
+│ │              │              │                                 │
+│ ▼              ▼              ▼                                 │
+│ Criar Tarefa Ver/Editar Excluir                                 │
+│ /cadastrar /tarefa/:id /deletar/:id                             │
+│ │ /editar/:id                 │                                 │
+│ └──────────────┼──────────────┘                                 │
+│                │                                                │
+│                ▼                                                │
+│             /logout                                             │
+│         (destrói sessão)                                        │
+│                │                                                │
+│                ▼                                                │
+│         Volta ao /login                                         │
 └─────────────────────────────────────────────────────────────────┘
 
 ---
@@ -211,22 +211,22 @@ taskflow-academico/
 ### Instalação (3 minutos)
 
 
-# 1. Clone o repositório ou copie os arquivos para uma pasta
+### 1. Clone o repositório ou copie os arquivos para uma pasta
 git clone https://github.com/seu-usuario/taskflow-academico.git
 
-# 2. Acesse a pasta do projeto
+### 2. Acesse a pasta do projeto
 cd taskflow-academico
 
-# 3. Instale todas as dependências
+### 3. Instale todas as dependências
 npm install
 
-# 4. Inicie o servidor
+### 4. Inicie o servidor
 node app.js
 
-# Acesso
+### Acesso
 Abra o navegador e acesse: http://localhost:3000
 
-# Primeiro Acesso
+## Primeiro Acesso
 Passo |	Ação	                           | Detalhe
 ----------------------------------------------------------
 1	    | Acesse http://localhost:3000	   | Redirecionado para /login
@@ -235,7 +235,7 @@ Passo |	Ação	                           | Detalhe
 4	    | Clique em "Criar Conta"	         | Login automático!
 5	    | Comece a gerenciar suas tarefas	 | CRUD completo liberado
 
-# Testando o CRUD
+## Testando o CRUD
 
 Criar Tarefa
 Clique em "Nova Tarefa"
@@ -258,8 +258,7 @@ Excluir Tarefa
 2 - Confirme na janela de diálogo
 3 - Feedback: "Tarefa excluída permanentemente!"
 
-# Personalização
-
+## Personalização
 Mudar para MySQL
 1 - Instale o driver: npm install mysql2
 2 - Altere config/database.js:
@@ -273,10 +272,10 @@ const sequelize = new Sequelize({
 });
 3 - Crie o banco no MySQL: CREATE DATABASE taskflow;
 
-# Adicionar Novas Categorias
+## Adicionar Novas Categorias
 No arquivo models/Tarefa.js, atualize a validação isIn e os <option> nos formulários cadastrar.handlebars e editar.handlebars.
 
-# Problemas Comuns
+## Problemas Comuns
 Erro	                | Causa	                        | Solução
 ------------------------------------------------------------------------------------------------
 EADDRINUSE :::3000	  | Porta 3000 em uso	            | Feche outros terminais ou altere a porta
@@ -285,18 +284,21 @@ Erro ao criar conta	  | Email inválido ou senha curta	| Email válido + senha 6
 Sessão expirou	      | 24 horas desde o login	      | Faça login novamente
 Bootstrap não carrega	| Sem internet (CDN)	          | Verifique sua conexão
 
-# Atribuições e Licenças
-## Ícones
+## Atribuições e Licenças
+### Ícones
 Bootstrap Icons - Licença MIT
 Uso gratuito, sem necessidade de atribuição
 
-## Logo
+### Logo
 Imagem personalizada do projeto TaskFlow
 
-## Código Fonte
+### Background
+Imagem de plano de fundo
+
+### Código Fonte
 Licença MIT - Livre para uso, modificação e distribuição
 
-## Licença
+### Licença
 MIT License
 
 Copyright (c) 2026 TaskFlow Acadêmico
@@ -307,25 +309,25 @@ in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software...
 
-# Informações Acadêmicas
+## Informações Acadêmicas
 Disciplina: Desenvolvimento de Sistemas
 Professor: Westn Melo
 Desenvolvedores: Camila Paranhos, Juliana Viana, Simeon Gomes
 Instituição: Serviço Nacional de Aprendizagem Industrial - SENAI Camaçari
 Ano: 2026
 
-# Referências
+## Referências
 
-Documentação Express: https://expressjs.com/pt-br/
-Documentação Sequelize: https://sequelize.org/docs/v6/
-Documentação Handlebars: https://handlebarsjs.com/guide/
-Documentação Bootstrap 5: https://getbootstrap.com/docs/5.3/
-Bootstrap Icons: https://icons.getbootstrap.com/
-Documentação bcryptjs: https://www.npmjs.com/package/bcryptjs
-Documentação express-session: https://www.npmjs.com/package/express-session
+####Documentação Express: https://expressjs.com/pt-br/
+####Documentação Sequelize: https://sequelize.org/docs/v6/
+####Documentação Handlebars: https://handlebarsjs.com/guide/
+####Documentação Bootstrap 5: https://getbootstrap.com/docs/5.3/
+####Bootstrap Icons: https://icons.getbootstrap.com/
+####Documentação bcryptjs: https://www.npmjs.com/package/bcryptjs
+####Documentação express-session: https://www.npmjs.com/package/express-session
 
 
-## Desenvolvido para fins educacionais
+### Desenvolvido para fins educacionais
 
 
 
