@@ -1,4 +1,4 @@
-# TaskFlow - Gerenciador de Tarefas Acadêmicas e Profissionais
+## TaskFlow - Gerenciador de Tarefas Acadêmicas e Profissionais
 
 ![Badge de Status](https://img.shields.io/badge/status-MVP%20Acadêmico-blue)
 ![Badge Node.js](https://img.shields.io/badge/Node.js-18%2B-brightgreen)
@@ -69,7 +69,7 @@ O **TaskFlow** foi desenvolvido como material didático para apresentações aca
 
 ---
 
-## Stack Tecnológica
+## Acervo Tecnológico
 
 | Tecnologia             | Versão | Propósito                            |
 |------------------------|--------|--------------------------------------|
@@ -210,7 +210,6 @@ taskflow-academico/
 
 ### Instalação (3 minutos)
 
-
 ### 1. Clone o repositório ou copie os arquivos para uma pasta
 git clone https://github.com/seu-usuario/taskflow-academico.git
 
@@ -318,13 +317,13 @@ Ano: 2026
 
 ## Referências
 
-####Documentação Express: https://expressjs.com/pt-br/
-####Documentação Sequelize: https://sequelize.org/docs/v6/
-####Documentação Handlebars: https://handlebarsjs.com/guide/
-####Documentação Bootstrap 5: https://getbootstrap.com/docs/5.3/
-####Bootstrap Icons: https://icons.getbootstrap.com/
-####Documentação bcryptjs: https://www.npmjs.com/package/bcryptjs
-####Documentação express-session: https://www.npmjs.com/package/express-session
+### Documentação Express: https://expressjs.com/pt-br/
+### Documentação Sequelize: https://sequelize.org/docs/v6/
+### Documentação Handlebars: https://handlebarsjs.com/guide/
+### Documentação Bootstrap 5: https://getbootstrap.com/docs/5.3/
+### Bootstrap Icons: https://icons.getbootstrap.com/
+### Documentação bcryptjs: https://www.npmjs.com/package/bcryptjs
+### Documentação express-session: https://www.npmjs.com/package/express-session
 
 
 ### Desenvolvido para fins educacionais
