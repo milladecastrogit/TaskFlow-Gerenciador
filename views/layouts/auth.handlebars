@@ -1,0 +1,247 @@
+{{!-- 
+    ==============================================================================
+    LAYOUT DE AUTENTICAÇÃO - TELA DE LOGIN E REGISTRO
+    ==============================================================================
+    Este é o layout usado EXCLUSIVAMENTE para as telas de autenticação
+    (login e registro). Diferente do layout 'main', este NÃO possui:
+    - Barra de navegação (navbar)
+    - Rodapé
+    
+    Características deste layout:
+    - Fundo com imagem de background (background-task.png)
+    - Layout dividido em duas colunas:
+        LADO ESQUERDO: Informações sobre o TaskFlow (logo, descrição)
+        LADO DIREITO:  Formulário de login OU registro
+    
+    O Handlebars injeta o conteúdo específico (login ou registro) 
+    onde está escrito {{{body}}}.
+    
+    Como usar este layout:
+    A view filha (login.handlebars, registro.handlebars) define:
+        {{#*inline "layout"}}auth{{/inline}}
+    Para indicar que quer usar este layout em vez do 'main'.
+    ==============================================================================
+--}}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    {{!-- 
+        meta viewport: Essencial para design responsivo.
+        Garante que a página se adapte corretamente em dispositivos móveis.
+        width=device-width → Largura da página = largura da tela do dispositivo
+        initial-scale=1.0 → Zoom inicial de 100%
+    --}}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    {{!-- 
+        Título dinâmico da página.
+        {{tituloPagina}} é uma variável passada pelo controller.
+        Exemplos: "Entrar | TaskFlow", "Criar Conta | TaskFlow"
+    --}}
+    <title>{{tituloPagina}} | TaskFlow</title>
+    
+    {{!-- 
+        Bootstrap CSS via CDN (Content Delivery Network).
+        Carregamos de um servidor externo para não precisar baixar o arquivo.
+        Bootstrap fornece classes prontas como 'btn', 'card', 'container', etc.
+    --}}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    {{!-- 
+        Bootstrap Icons via CDN.
+        Biblioteca de ícones SVG gratuitos. Mais de 2000 ícones disponíveis.
+        Usamos classes como: bi-check2-square, bi-person, bi-lock, bi-envelope.
+    --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    
+    {{!-- 
+        CSS Personalizado do projeto.
+        Contém estilos específicos: fundo gradiente, logo redonda, animações.
+        O caminho '/css/style.css' é servido pela pasta 'public' via express.static.
+    --}}
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    {{!-- 
+        CONTAINER PRINCIPAL DA AUTENTICAÇÃO
+        ===================================
+        A classe 'auth-container' está definida no style.css:
+        - Ocupa 100% da altura da tela (min-height: 100vh)
+        - Centraliza o card horizontal e verticalmente (flex + align/justify center)
+        - Tem a imagem de background (background-task.png)
+    --}}
+    <div class="auth-container">
+        
+        {{!-- 
+            CARD PRINCIPAL
+            ==============
+            'auth-card' usa flexbox para dividir em duas colunas lado a lado.
+            Em telas pequenas (até 768px), as colunas se empilham verticalmente.
+            A classe 'card' do Bootstrap já dá bordas arredondadas.
+        --}}
+        <div class="auth-card">
+            
+            {{!-- 
+                ╔══════════════════════════════════════════════════════╗
+                ║  LADO ESQUERDO: INFORMAÇÕES SOBRE O TASKFLOW       ║
+                ╚══════════════════════════════════════════════════════╝
+                
+                Fundo gradiente azul/roxo (#0d6efd → #6610f2).
+                Contém:
+                - Logo do TaskFlow (dentro de um círculo branco)
+                - Nome do sistema
+                - Texto descritivo "Sobre" justificado
+                
+                Classes CSS (definidas no style.css):
+                - auth-info: Container com gradiente, padding, centralização
+                - logo-redonda: Círculo branco com sombra e border-radius 50%
+                - sobre-texto: Texto justificado com espaçamento de linha
+            --}}
+            <div class="auth-info">
+                
+                {{!-- 
+                    LOGO REDONDA
+                    A imagem fica dentro de um div circular branco.
+                    O CSS aplica:
+                    - border-radius: 50% (torna o div redondo)
+                    - background: white (fundo branco atrás da logo)
+                    - box-shadow: sombra para destaque
+                    - padding: espaço interno entre a borda e a imagem
+                --}}
+                <div class="logo-redonda">
+                    {{!-- 
+                        Caminho da imagem: /img/logo.png
+                        O servidor busca em: public/img/logo.png
+                        alt="TaskFlow": Texto alternativo (acessibilidade e SEO)
+                    --}}
+                    <img src="/img/logo.png" alt="TaskFlow">
+                </div>
+                
+                {{!-- Nome do sistema em destaque --}}
+                <h2>TaskFlow</h2>
+                
+                {{!-- 
+                    Subtítulo com letras espaçadas (letter-spacing via CSS).
+                    Aparece em letras maiúsculas e opacidade reduzida.
+                --}}
+                <p class="sistema-nome">Gerenciador de Tarefas</p>
+                
+                {{!-- 
+                    TEXTO "SOBRE" O SISTEMA
+                    =========================
+                    Texto justificado (alinhado à esquerda e à direita).
+                    Explica de forma resumida o propósito do TaskFlow.
+                    
+                    <strong>: Tag HTML para texto em negrito.
+                    
+                    O CSS (classe 'sobre-texto') define:
+                    - text-align: justify (alinhamento justificado)
+                    - line-height: 1.8 (espaçamento confortável entre linhas)
+                    - font-size: 14px (tamanho de fonte legível)
+                --}}
+                <p class="sobre-texto">
+                    O <strong>TaskFlow</strong> é um sistema de gerenciamento de tarefas 
+                    acadêmicas e profissionais que permite organizar, acompanhar e 
+                    priorizar suas atividades diárias. Com categorias para Trabalho, 
+                    Faculdade e Pessoal, você mantém o foco no que realmente importa. 
+                    Simples, intuitivo e eficiente.
+                </p>
+            </div>
+            
+            {{!-- 
+                ╔══════════════════════════════════════════════════════╗
+                ║  LADO DIREITO: FORMULÁRIO DE AUTENTICAÇÃO          ║
+                ╚══════════════════════════════════════════════════════╝
+                
+                Fundo branco com o formulário de login OU registro.
+                O conteúdo exato do formulário é injetado via {{{body}}}.
+                
+                Classes CSS:
+                - auth-form: Container do formulário com padding e centralização
+            --}}
+            <div class="auth-form">
+                
+                {{!-- 
+                    TÍTULO DINÂMICO DO FORMULÁRIO
+                    ==============================
+                    Usa o helper 'eq' (definido no app.js) para comparar valores.
+                    
+                    Lógica:
+                    SE tituloPagina for 'Entrar' → Mostra "Bem-vindo de volta!"
+                    SENÃO → Mostra "Crie sua conta"
+                    
+                    Isso permite que o MESMO layout sirva para login e registro,
+                    mudando apenas o texto conforme a página.
+                --}}
+                <h3>
+                    {{#if (eq tituloPagina 'Entrar')}}
+                        Bem-vindo de volta!
+                    {{else}}
+                        Crie sua conta
+                    {{/if}}
+                </h3>
+                
+                {{!-- 
+                    SUBTÍTULO DINÂMICO
+                    Mesma lógica do título: muda conforme a página.
+                --}}
+                <p class="form-subtitle">
+                    {{#if (eq tituloPagina 'Entrar')}}
+                        Faça login para acessar suas tarefas
+                    {{else}}
+                        Comece a organizar sua vida agora
+                    {{/if}}
+                </p>
+                
+                {{!-- 
+                    PARTIAL DE MENSAGENS (FEEDBACK)
+                    =================================
+                    {{> mensagens}} inclui o arquivo views/partials/mensagens.handlebars.
+                    
+                    Este partial exibe alertas coloridos:
+                    - Verde (success): Operação bem-sucedida
+                    - Vermelho (danger): Erro
+                    - Amarelo (warning): Alerta
+                    
+                    Se a variável 'mensagem' for null (não houver feedback),
+                    o partial não renderiza nada.
+                --}}
+                {{> mensagens}}
+                
+                {{!-- 
+                    CONTEÚDO ESPECÍFICO DA PÁGINA
+                    ===============================
+                    {{{body}}} é uma expressão TRIPLA do Handlebars.
+                    
+                    As chaves TRIPLAS ({{{ }}}) são diferentes das duplas ({{ }}):
+                    - {{ variavel }} → Escapa HTML (converte < para &lt;)
+                    - {{{ variavel }}} → NÃO escapa HTML (permite tags HTML)
+                    
+                    Aqui será injetado o conteúdo de:
+                    - login.handlebars (formulário de login)
+                    - registro.handlebars (formulário de registro)
+                    
+                    Usamos chaves triplas porque o conteúdo contém tags HTML
+                    que precisam ser renderizadas, não exibidas como texto.
+                --}}
+                {{{body}}}
+            </div>
+            
+        </div>
+    </div>
+
+    {{!-- 
+        Bootstrap JavaScript via CDN.
+        Necessário para componentes interativos:
+        - Alertas com botão de fechar (data-bs-dismiss="alert")
+        - Navbar responsiva (menu hamburguer)
+        - Modais, dropdowns, tooltips, etc.
+        
+        Colocado no final do <body> para não bloquear o carregamento da página.
+    --}}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

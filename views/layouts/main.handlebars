@@ -1,0 +1,263 @@
+{{!-- 
+    ==============================================================================
+    LAYOUT PRINCIPAL - PÁGINAS INTERNAS (APÓS LOGIN)
+    ==============================================================================
+    Este é o layout usado para TODAS as páginas internas do sistema,
+    ou seja, páginas que exigem que o usuário esteja logado.
+    
+    Diferente do layout 'auth' (usado no login/registro), este possui:
+    - Barra de navegação (navbar) com links e nome do usuário
+    - Container central para o conteúdo
+    - Rodapé com informações do projeto
+    
+    O conteúdo específico de cada página é injetado em {{{body}}}.
+    
+    Views que usam este layout:
+    - index.handlebars      (listagem de tarefas)
+    - detalhes.handlebars   (visualização de uma tarefa)
+    - cadastrar.handlebars  (formulário de nova tarefa)
+    - editar.handlebars     (formulário de edição)
+    
+    Por padrão, o Handlebars usa o layout 'main' automaticamente.
+    Só especificamos outro layout (ex: 'auth') quando necessário.
+    ==============================================================================
+--}}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    {{!-- 
+        Meta tag viewport: Essencial para design responsivo.
+        Faz a página se adaptar a diferentes tamanhos de tela.
+    --}}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    {{!-- Título dinâmico da página (vindo do controller) --}}
+    <title>{{tituloPagina}} | TaskFlow</title>
+    
+    {{!-- 
+        Bootstrap CSS via CDN.
+        Framework CSS que fornece classes prontas para estilização.
+        Exemplos: btn, card, navbar, container, row, col, alert.
+    --}}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    {{!-- 
+        Bootstrap Icons via CDN.
+        Ícones SVG gratuitos. Usamos para substituir emojis por ícones profissionais.
+        Exemplos: bi-person-circle, bi-list-ul, bi-plus-lg, bi-box-arrow-right.
+    --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    
+    {{!-- 
+        CSS Personalizado do projeto.
+        Contém estilos para: fundo da área logada, cards de tarefa, navbar, animações.
+    --}}
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+{{!-- 
+    Classe 'bg-light' do Bootstrap: Fundo cinza claro.
+    No style.css, sobrescrevemos essa classe para usar a imagem de background
+    com uma camada branca semitransparente por cima.
+--}}
+<body class="bg-light">
+
+    {{!-- 
+        ╔══════════════════════════════════════════════════════════╗
+        ║  BARRA DE NAVEGAÇÃO (NAVBAR)                           ║
+        ╚══════════════════════════════════════════════════════════╝
+        
+        Classes Bootstrap usadas:
+        - navbar: Container principal da barra
+        - navbar-expand-lg: Em telas grandes (≥992px), itens ficam expandidos
+                            Em telas menores, colapsam no menu hamburguer
+        - navbar-dark: Texto claro (branco) nos links
+        - bg-primary: Fundo azul (cor primária do Bootstrap)
+        - mb-4: Margin-bottom de 4 unidades (espaçamento abaixo da navbar)
+    --}}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+        <div class="container">
+            
+            {{!-- 
+                LOGO / MARCA NA NAVBAR
+                =======================
+                - navbar-brand: Classe para a marca/logotipo
+                - href="/": Link para a página inicial
+                - A imagem da logo fica dentro de um círculo branco (CSS: border-radius: 50%)
+                - height="30": Altura fixa de 30px para não distorcer
+                - me-2: Margin-right (espaçamento à direita)
+            --}}
+            <a class="navbar-brand" href="/">
+             <span class="logo-nav-container">
+                <img src="/img/logo.png" alt="TaskFlow">
+             </span>
+                Task Flow
+            </a>
+            
+            {{!-- 
+                BOTÃO MENU HAMBURGUER
+                ======================
+                Só aparece em telas pequenas (<992px).
+                - navbar-toggler: Estiliza o botão
+                - data-bs-toggle="collapse": Ativa o comportamento de colapso
+                - data-bs-target="#navbarNav": Indica qual elemento será colapsado/expandido
+                - navbar-toggler-icon: Ícone de três linhas (hamburguer)
+            --}}
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            {{!-- 
+                CONTEÚDO COLAPSÁVEL DA NAVBAR
+                ==============================
+                - collapse navbar-collapse: Esconde/mostra conforme o botão hamburguer
+                - id="navbarNav": Vinculado ao data-bs-target do botão acima
+            --}}
+            <div class="collapse navbar-collapse" id="navbarNav">
+                
+                {{!-- 
+                    LISTA DE LINKS ALINHADA À DIREITA
+                    - navbar-nav: Lista de navegação
+                    - ms-auto: Margin-left automático (empurra os itens para a direita)
+                --}}
+                <ul class="navbar-nav ms-auto">
+                    
+                    {{!-- 
+                        SE O USUÁRIO ESTIVER LOGADO (sessão ativa)
+                        ===========================================
+                        A variável 'usuario' é injetada em TODAS as views
+                        pelo middleware de autenticação no app.js:
+                        res.locals.usuario = req.session.usuario;
+                        
+                        Exibe:
+                        - Ícone de pessoa + nome do usuário
+                        - Link para logout (sair)
+                    --}}
+                    {{#if usuario}}
+                    <li class="nav-item">
+                        {{!-- 
+                            Nome do usuário logado.
+                            navbar-text: Texto estilizado como item da navbar
+                            text-white: Cor branca
+                            me-3: Espaçamento à direita
+                        --}}
+                        <span class="navbar-text text-white me-3">
+                            <i class="bi bi-person-circle me-1"></i>{{usuario.nome}}
+                        </span>
+                    </li>
+                    <li class="nav-item">
+                        {{!-- 
+                            Link de Logout (Sair).
+                            - href="/logout": Rota que destrói a sessão
+                            - Ícone: bi-box-arrow-right (seta saindo de uma caixa)
+                        --}}
+                        <a class="nav-link" href="/logout">
+                            <i class="bi bi-box-arrow-right me-1"></i>Sair
+                        </a>
+                    </li>
+                    {{/if}}
+                    
+                    {{!-- 
+                        LINK: LISTAR TAREFAS
+                        Sempre visível (mesmo sem usuário, mas a rota é protegida).
+                        Ícone: bi-list-ul (lista com marcadores)
+                    --}}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">
+                            <i class="bi bi-list-ul me-1"></i>Listar Tarefas
+                        </a>
+                    </li>
+                    
+                    {{!-- 
+                        LINK: NOVA TAREFA
+                        Leva ao formulário de cadastro.
+                        Ícone: bi-plus-lg (sinal de adição)
+                    --}}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/cadastrar">
+                            <i class="bi bi-plus-lg me-1"></i>Nova Tarefa
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    {{!-- 
+        ╔══════════════════════════════════════════════════════════╗
+        ║  CONTEÚDO PRINCIPAL DA PÁGINA                          ║
+        ╚══════════════════════════════════════════════════════════╝
+        
+        - container: Classe Bootstrap que centraliza e limita a largura
+        - Todas as páginas internas são renderizadas dentro deste container
+    --}}
+    <main class="container">
+        
+        {{!-- 
+            PARTIAL DE MENSAGENS DE FEEDBACK
+            =================================
+            Inclui o arquivo views/partials/mensagens.handlebars.
+            
+            Este partial exibe alertas coloridos do Bootstrap:
+            - Verde (alert-success): Operação realizada com sucesso
+            - Vermelho (alert-danger): Erro na operação
+            - Amarelo (alert-warning): Alerta/aviso
+            
+            Se não houver mensagem (variável 'mensagem' = null),
+            o partial não renderiza nada.
+        --}}
+        {{> mensagens}}
+        
+        {{!-- 
+            CONTEÚDO ESPECÍFICO DA VIEW
+            =============================
+            {{{body}}} é onde o conteúdo da view filha é injetado.
+            
+            Views que preenchem este espaço:
+            - index.handlebars      → Lista de cards com tarefas
+            - detalhes.handlebars   → Página de detalhes de uma tarefa
+            - cadastrar.handlebars  → Formulário de nova tarefa
+            - editar.handlebars     → Formulário de edição de tarefa
+            
+            Usamos {{{ }}} (chaves triplas) para NÃO escapar o HTML.
+        --}}
+        {{{body}}}
+    </main>
+
+    {{!-- 
+        ╔══════════════════════════════════════════════════════════╗
+        ║  RODAPÉ (FOOTER)                                       ║
+        ╚══════════════════════════════════════════════════════════╝
+        
+        - mt-5: Margin-top grande (espaçamento acima)
+        - py-3: Padding vertical (espaçamento interno acima e abaixo)
+        - text-center: Texto centralizado
+        - text-muted: Cor de texto suave (cinza)
+    --}}
+    <footer class="mt-5 py-3 text-center text-muted">
+        <div class="container">
+            {{!-- 
+                Informações do projeto e créditos.
+                &copy; → Símbolo de copyright (©)
+            --}}
+            <small>&copy; Desenvolvido por: Camila Paranhos, Juliana Viana, Simeon Gomes - 2026 TaskFlow Acadêmico.</small>
+        </div>
+    </footer>
+
+    {{!-- 
+        Bootstrap JavaScript via CDN.
+        =================================
+        Carregado no FINAL do <body> por dois motivos:
+        1. Não bloqueia o carregamento do conteúdo da página
+        2. Os elementos HTML já existem quando o script executar
+        
+        Necessário para:
+        - Menu hamburguer da navbar (data-bs-toggle="collapse")
+        - Botão de fechar dos alertas (data-bs-dismiss="alert")
+        - Qualquer componente interativo do Bootstrap
+    --}}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

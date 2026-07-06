@@ -1,0 +1,272 @@
+{{!-- 
+    ==============================================================================
+    PÁGINA DE DETALHES DA TAREFA (READ - Individual)
+    ==============================================================================
+    Esta view exibe TODAS as informações de UMA tarefa específica.
+    Diferente da listagem (que mostra cards resumidos), aqui a tarefa
+    é apresentada em destaque, ocupando a largura principal da tela.
+    
+    Fluxo:
+    1. Usuário clica em "Detalhes" no card da tarefa
+    2. Navegador acessa GET /tarefa/:id (ex: /tarefa/3)
+    3. TarefaController.detalhesTarefa() busca a tarefa pelo ID
+    4. Se encontrada, renderiza esta view com os dados da tarefa
+    5. Se não encontrada, redireciona com mensagem de erro
+    
+    Ações disponíveis:
+    - Voltar para a lista
+    - Editar tarefa
+    - Excluir tarefa (com confirmação)
+    
+    A variável 'tarefa' contém:
+    - tarefa.id
+    - tarefa.titulo
+    - tarefa.descricao (pode ser null)
+    - tarefa.categoria
+    ==============================================================================
+--}}
+
+{{!-- Título na aba do navegador --}}
+{{#*inline "tituloPagina"}}Detalhes da Tarefa{{/inline}}
+
+{{!-- 
+    
+    ║ CABEÇALHO COM BOTÕES DE NAVEGAÇÃO 
+    ------------------------------------                    
+    
+    
+    Layout flexível com:
+    - Título à esquerda: "Detalhes da Tarefa"
+    - Botões à direita: "Voltar" e "Editar"
+--}}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    
+    {{!-- Título da página --}}
+    <h1 class="h2">🔍 Detalhes da Tarefa</h1>
+    
+    {{!-- Grupo de botões de ação rápida --}}
+    <div>
+        {{!-- 
+            BOTÃO "VOLTAR PARA LISTA"
+            ==========================
+            - href="/": Retorna para a página inicial (lista de tarefas)
+            - btn-secondary: Botão cinza (ação neutra/secundária)
+            - me-2: Espaçamento à direita (separa do botão Editar)
+            
+            Ícone: bi-arrow-left (seta para esquerda = voltar)
+        --}}
+        <a href="/" class="btn btn-secondary me-2">
+            <i class="bi bi-arrow-left"></i> Voltar para Lista
+        </a>
+        
+        {{!-- 
+            BOTÃO "EDITAR"
+            ===============
+            - href="/editar/{{tarefa.id}}": Link para o formulário de edição
+              Exemplo: /editar/5
+            - btn-warning: Botão amarelo/laranja (indica ação de modificação)
+            
+            Ícone: bi-pencil-square (lápis = editar)
+            
+            Ao clicar, o controller busca a tarefa e renderiza
+            o formulário de edição com os campos preenchidos.
+        --}}
+        <a href="/editar/{{tarefa.id}}" class="btn btn-warning">
+            <i class="bi bi-pencil-square"></i> Editar
+        </a>
+    </div>
+</div>
+
+{{!-- 
+    
+      CARD PRINCIPAL COM DETALHES DA TAREFA
+      ----------------------------------------                 
+    
+    
+    Centralizado na tela:
+    - row justify-content-center: Centraliza o conteúdo horizontalmente
+    - col-md-8: Em telas médias/grandes, ocupa 8 de 12 colunas (≈67% da largura)
+      Em telas pequenas, ocupa 100% da largura
+--}}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        
+        {{!-- 
+            Card com sombra (shadow) para destaque visual.
+            A sombra dá a sensação de profundidade, destacando o conteúdo.
+        --}}
+        <div class="card shadow">
+            
+            {{!-- 
+                
+                  CABEÇALHO DO CARD (COR POR CATEGORIA)  
+                  ---------------------------------------           
+                
+                
+                Mesmo sistema de cores da listagem:
+                - Trabalho:   Amarelo (bg-warning)
+                - Faculdade:  Azul claro (bg-info)
+                - Pessoal:    Verde (bg-success)
+                
+                fw-bold: Negrito
+                fs-5: Tamanho de fonte maior (Bootstrap font-size 5)
+                
+                Usa o helper 'eq' para comparar a categoria.
+            --}}
+            <div class="card-header fw-bold fs-5
+                {{#if (eq tarefa.categoria 'Trabalho')}}bg-warning text-dark
+                {{else if (eq tarefa.categoria 'Faculdade')}}bg-info text-dark
+                {{else}}bg-success text-white{{/if}}">
+                
+                {{!-- 
+                    Ícone de etiqueta + nome da categoria.
+                    bi-tag-fill: Etiqueta preenchida (representa classificação)
+                --}}
+                <i class="bi bi-tag-fill me-2"></i>{{tarefa.categoria}}
+            </div>
+            
+            {{!-- 
+                CORPO DO CARD
+                ==============
+                Contém todas as informações detalhadas da tarefa.
+            --}}
+            <div class="card-body">
+                
+                {{!-- 
+                    TÍTULO DA TAREFA
+                    =================
+                    Exibido com destaque (h3).
+                    mb-3: Espaçamento abaixo do título.
+                --}}
+                <h3 class="card-title mb-3">{{tarefa.titulo}}</h3>
+                
+                {{!-- 
+                    LINHA SEPARADORA
+                    <hr>: Horizontal Rule (linha horizontal).
+                    Separa visualmente o título da descrição.
+                --}}
+                <hr>
+                
+                {{!-- 
+                    SEÇÃO: DESCRIÇÃO
+                    =================
+                    Subtítulo "Descrição:" em cinza (text-muted).
+                    mb-2: Espaçamento abaixo do subtítulo.
+                --}}
+                <h5 class="text-muted mb-2">Descrição:</h5>
+                
+                {{!-- 
+                    VERIFICA SE A DESCRIÇÃO EXISTE
+                    ===============================
+                    {{#if tarefa.descricao}}
+                    
+                    Como a descrição é opcional (allowNull: true no modelo),
+                    precisamos verificar se ela foi preenchida.
+                --}}
+                {{#if tarefa.descricao}}
+                    
+                    {{!-- 
+                        DESCRIÇÃO PREENCHIDA
+                        =====================
+                        Exibe o texto da descrição em uma caixa estilizada.
+                        
+                        Classes:
+                        - p-3: Padding interno (espaçamento confortável)
+                        - bg-light: Fundo cinza claro
+                        - rounded: Bordas arredondadas
+                        - border: Borda sutil
+                        
+                        Estilo inline:
+                        - white-space: pre-wrap → Preserva quebras de linha digitadas pelo usuário
+                          Sem isso, o texto ficaria todo em uma linha só.
+                        - min-height: 100px → Altura mínima, mesmo para descrições curtas
+                    --}}
+                    <div class="p-3 bg-light rounded border" style="white-space: pre-wrap; min-height: 100px;">
+                        {{tarefa.descricao}}
+                    </div>
+                    
+                {{else}}
+                    {{!-- 
+                        DESCRIÇÃO VAZIA
+                        ================
+                        Mensagem alternativa quando a tarefa não tem descrição.
+                        
+                        - fst-italic: Texto em itálico (indica que é uma mensagem do sistema)
+                        - text-muted: Cor cinza (menos destaque)
+                    --}}
+                    <div class="p-3 bg-light rounded border text-muted fst-italic">
+                        Nenhuma descrição fornecida para esta tarefa.
+                    </div>
+                {{/if}}
+                
+                {{!-- 
+                    METADADOS DA TAREFA
+                    ====================
+                    Informações complementares sobre a tarefa.
+                    
+                    - mt-4: Espaçamento acima
+                    - text-muted: Texto cinza (informação secundária)
+                    
+                    Ícone: bi-fingerprint (impressão digital = identificação única)
+                    
+                    Exibe o ID da tarefa no banco de dados.
+                    O ID é útil para referência e debug.
+                --}}
+                <div class="mt-4 text-muted">
+                    <small>
+                        <i class="bi bi-fingerprint me-1"></i> 
+                        ID da Tarefa: <strong>#{{tarefa.id}}</strong>
+                    </small>
+                </div>
+                
+                {{!-- 
+                    
+                      BOTÕES DE AÇÃO NO RODAPÉ DO CARD  
+                      ---------------------------------               
+                    
+                    
+                    - d-flex: Layout flexível
+                    - justify-content-end: Alinhados à direita
+                    - mt-4: Espaçamento acima
+                --}}
+                <div class="d-flex justify-content-end mt-4">
+                    
+                    {{!-- 
+                        BOTÃO "EXCLUIR TAREFA" (DELETE)
+                        =================================
+                        Mesmo funcionamento do botão na listagem,
+                        mas em tamanho normal (não btn-sm) por estar em página dedicada.
+                        
+                        Envolvido em um <form> com method="post".
+                        Inclui confirmação via onclick="return confirm(...)".
+                        
+                        btn-danger: Vermelho (ação destrutiva)
+                        me-2: Espaçamento à direita
+                        
+                        Ícone: bi-trash (lixeira)
+                    --}}
+                    <form action="/deletar/{{tarefa.id}}" method="post" class="me-2">
+                        <button type="submit" class="btn btn-danger" 
+                                onclick="return confirm('Tem certeza que deseja excluir permanentemente esta tarefa?')">
+                            <i class="bi bi-trash"></i> Excluir Tarefa
+                        </button>
+                    </form>
+                    
+                    {{!-- 
+                        BOTÃO "EDITAR TAREFA" (UPDATE)
+                        ================================
+                        - href="/editar/{{tarefa.id}}"
+                        - btn-primary: Azul (cor primária)
+                        
+                        Ícone: bi-pencil-square (lápis)
+                        
+                        Leva ao formulário de edição com os dados atuais preenchidos.
+                    --}}
+                    <a href="/editar/{{tarefa.id}}" class="btn btn-primary">
+                        <i class="bi bi-pencil-square"></i> Editar Tarefa
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

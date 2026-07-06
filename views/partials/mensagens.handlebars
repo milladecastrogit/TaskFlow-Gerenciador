@@ -1,0 +1,141 @@
+
+{{!-- 
+    ==============================================================================
+    PARTIAL DE MENSAGENS DE FEEDBACK
+    ==============================================================================
+    Este é um COMPONENTE REUTILIZÁVEL (partial) que exibe mensagens
+    de feedback ao usuário após operações no sistema.
+    
+    O que é um Partial?
+    É um pedaço de template que pode ser incluído em várias páginas.
+    Em vez de repetir o mesmo código em cada view, criamos uma vez
+    e usamos {{> mensagens}} onde precisarmos.
+    
+    O partial é incluído nos layouts (auth.handlebars e main.handlebars)
+    através da tag {{> mensagens}}.
+    
+    Isso significa que TODAS as páginas automaticamente
+    têm suporte a mensagens de feedback.
+    
+    Como funciona:
+    1. O controller detecta sucesso/erro em uma operação
+    2. Redireciona com uma mensagem na query string
+       Ex: /?msg_success=Tarefa%20criada%20com%20sucesso
+    3. O controller que renderiza a view captura essa query string
+       e monta um objeto 'mensagem' = { tipo: 'success', texto: '...' }
+    4. Este partial verifica se 'mensagem' existe e a exibe
+    
+    Se a variável 'mensagem' for null (não houver feedback),
+    o partial não renderiza nada (graças ao {{#if mensagem}}).
+    
+    Tipos de mensagem (baseados no Bootstrap):
+    - success → Verde  (operação bem-sucedida)
+    - danger  → Vermelho (erro)
+    - warning → Amarelo (alerta/aviso)
+    - info    → Azul claro (informativo - padrão)
+    
+    Cada tipo tem um ícone específico do Bootstrap Icons.
+    ==============================================================================
+--}}
+
+{{!-- 
+    VERIFICA SE EXISTE UMA MENSAGEM PARA EXIBIR
+    ============================================
+    {{#if mensagem}}: Bloco condicional do Handlebars.
+    Só renderiza o conteúdo se 'mensagem' não for null/undefined/vazio.
+    
+    Se nenhuma mensagem foi passada pelo controller,
+    este bloco inteiro é ignorado (não renderiza nada).
+--}}
+{{#if mensagem}}
+    
+    {{!-- 
+        ALERTA BOOTSTRAP
+        =================
+        - alert: Classe base de alerta
+        - alert-{{mensagem.tipo}}: Classe dinâmica que define a cor.
+          Exemplos:
+            mensagem.tipo = 'success' → alert-success (verde)
+            mensagem.tipo = 'danger'  → alert-danger (vermelho)
+            mensagem.tipo = 'warning' → alert-warning (amarelo)
+            mensagem.tipo = 'info'    → alert-info (azul)
+        
+        - alert-dismissible: Permite que o usuário feche o alerta
+        - fade show: Animação de aparecimento (fade in) e exibição
+        - role="alert": Atributo de acessibilidade para leitores de tela
+    --}}
+    <div class="alert alert-{{mensagem.tipo}} alert-dismissible fade show" role="alert">
+        
+        {{!-- 
+            ╔══════════════════════════════════════════════════════╗
+            ║  ÍCONE DINÂMICO BASEADO NO TIPO DE MENSAGEM        ║
+            ╚══════════════════════════════════════════════════════╝
+            
+            Usamos {{#if}} encadeados com o helper 'eq'
+            para escolher o ícone correto para cada tipo de mensagem.
+            
+            LÓGICA:
+            SE tipo for 'success' → Ícone de check (verificação verde)
+            SE tipo for 'danger'  → Ícone de triângulo com exclamação (erro)
+            SE tipo for 'warning' → Ícone de círculo com exclamação (alerta)
+            SENÃO                  → Ícone de círculo com "i" (informação)
+        --}}
+        
+        {{!-- Mensagem de SUCESSO: Círculo verde com check --}}
+        {{#if (eq mensagem.tipo 'success')}}
+            <i class="bi bi-check-circle-fill me-2"></i>
+        
+        {{!-- Mensagem de ERRO: Triângulo vermelho com exclamação --}}
+        {{else if (eq mensagem.tipo 'danger')}}
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        
+        {{!-- Mensagem de ALERTA: Círculo amarelo com exclamação --}}
+        {{else if (eq mensagem.tipo 'warning')}}
+            <i class="bi bi-exclamation-circle-fill me-2"></i>
+        
+        {{!-- Mensagem INFORMATIVA (padrão): Círculo azul com "i" --}}
+        {{else}}
+            <i class="bi bi-info-circle-fill me-2"></i>
+        {{/if}}
+        
+        {{!-- 
+            TEXTO DA MENSAGEM
+            ==================
+            {{{mensagem.texto}}}: Usamos chaves TRIPLAS para NÃO escapar o HTML.
+            
+            Por que chaves triplas?
+            A mensagem pode conter tags HTML que queremos renderizar.
+            Exemplo: "Tarefa <strong>Reunião</strong> criada!"
+            
+            Com {{ }} (chaves duplas), o HTML seria escapado:
+            "Tarefa &lt;strong&gt;Reunião&lt;/strong&gt; criada!"
+            
+            Com {{{ }}} (chaves triplas), o HTML é renderizado:
+            "Tarefa Reunião criada!" (com Reunião em negrito)
+            
+            O texto vem do controller após encodeURIComponent e decode.
+            Exemplo de fluxo:
+            1. Controller: encodeURIComponent('Tarefa criada! ✅')
+               Resultado: 'Tarefa%20criada!%20%E2%9C%85'
+            2. URL: /?msg_success=Tarefa%20criada!%20%E2%9C%85
+            3. Próximo controller: req.query.msg_success
+               O Express automaticamente decodifica: 'Tarefa criada! ✅'
+            4. View: {{{mensagem.texto}}}
+               Exibe: Tarefa criada! ✅
+        --}}
+        {{{mensagem.texto}}}
+        
+        {{!-- 
+            BOTÃO DE FECHAR (X)
+            ====================
+            - btn-close: Estiliza o botão como um "X" de fechar
+            - data-bs-dismiss="alert": Atributo Bootstrap que faz o botão
+              FECHAR o alerta quando clicado (comportamento via JavaScript)
+            - aria-label="Fechar": Texto para leitores de tela (acessibilidade)
+            
+            O usuário pode clicar no "X" para dispensar a mensagem
+            sem precisar recarregar a página.
+        --}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+    </div>
+{{/if}}

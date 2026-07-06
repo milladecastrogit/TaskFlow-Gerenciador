@@ -1,0 +1,152 @@
+{{!-- 
+    ==============================================================================
+    TELA DE LOGIN
+    ==============================================================================
+    Esta view é renderizada DENTRO do layout 'auth.handlebars'.
+    Ela ocupa o lado DIREITO do card de autenticação (auth-form).
+    
+    Fluxo da página:
+    1. Usuário acessa http://localhost:3000/login
+    2. AuthController.mostrarLogin() é executado
+    3. Se não houver sessão ativa, esta view é renderizada
+    4. O formulário é enviado para POST /login (AuthController.login())
+    
+    O layout 'auth' fornece:
+    - Lado esquerdo: Logo + informações sobre o TaskFlow
+    - Lado direito: Este formulário de login (via {{{body}}})
+    ==============================================================================
+--}}
+
+{{!-- 
+    DEFINIÇÃO DO LAYOUT
+    ====================
+    Por padrão, o Handlebars usa o layout 'main'.
+    Aqui sobrescrevemos para usar o layout 'auth',
+    que tem o design dividido em duas colunas e fundo com imagem.
+    
+    {{#*inline "layout"}}auth{{/inline}}
+    Significa: "defina o bloco 'layout' com o valor 'auth'"
+    O Express-Handlebars entende isso e usa auth.handlebars como layout.
+--}}
+{{#*inline "layout"}}auth{{/inline}}
+
+{{!-- 
+    TÍTULO DA PÁGINA
+    =================
+    Esta variável é usada no <title> do layout (aba do navegador)
+    e também no título dinâmico do formulário.
+    
+    No auth.handlebars, a lógica é:
+    SE tituloPagina === 'Entrar' → Mostra "Bem-vindo de volta!"
+    SENÃO → Mostra "Crie sua conta"
+--}}
+{{#*inline "tituloPagina"}}Entrar{{/inline}}
+
+{{!-- 
+    ╔══════════════════════════════════════════════════════════╗
+    ║  FORMULÁRIO DE LOGIN                                   ║
+    ╚══════════════════════════════════════════════════════════╝
+    
+    Atributos do <form>:
+    - action="/login": URL para onde os dados serão enviados
+    - method="post": Método HTTP POST (dados enviados no corpo da requisição)
+    
+    Por que POST e não GET?
+    - GET: Dados ficam visíveis na URL (inseguro para senhas)
+    - POST: Dados são enviados no corpo da requisição (mais seguro)
+    
+    Quando o usuário clica em "Entrar":
+    1. O navegador envia email e senha para POST /login
+    2. AuthController.login() processa a requisição
+    3. Verifica email e senha no banco de dados
+    4. Se correto: cria sessão e redireciona para /
+    5. Se incorreto: redireciona de volta com mensagem de erro
+--}}
+<form action="/login" method="post">
+    
+    {{!-- 
+        CAMPO: EMAIL
+        =============
+        - type="email": Validação nativa do HTML5 para formato de email
+        - class="form-control": Classe Bootstrap que estiliza o campo
+        - id="email": Identificador único (vinculado ao label via 'for')
+        - name="email": Nome do campo enviado ao servidor (req.body.email)
+        - placeholder: Texto de exemplo que aparece quando o campo está vazio
+        - required: Campo obrigatório (validação do navegador)
+        - autofocus: Cursor pisca automaticamente neste campo ao carregar a página
+        
+        Ícone: bi-envelope-fill (envelope preenchido)
+    --}}
+    <div class="mb-3">
+        <label for="email" class="form-label">
+            <i class="bi bi-envelope-fill me-1"></i>Email
+        </label>
+        <input 
+            type="email" 
+            class="form-control" 
+            id="email" 
+            name="email" 
+            placeholder="seu@email.com" 
+            required
+            autofocus>
+    </div>
+
+    {{!-- 
+        CAMPO: SENHA
+        =============
+        - type="password": Oculta os caracteres digitados (aparecem como ●●●●)
+        - name="senha": Nome do campo enviado ao servidor (req.body.senha)
+        
+        Ícone: bi-lock-fill (cadeado preenchido, simbolizando segurança)
+    --}}
+    <div class="mb-3">
+        <label for="senha" class="form-label">
+            <i class="bi bi-lock-fill me-1"></i>Senha
+        </label>
+        <input 
+            type="password" 
+            class="form-control" 
+            id="senha" 
+            name="senha" 
+            placeholder="Sua senha" 
+            required>
+    </div>
+
+    {{!-- 
+        BOTÃO DE ENTRAR (SUBMIT)
+        =========================
+        - type="submit": Envia o formulário quando clicado
+        - class="btn btn-primary btn-lg": Classes Bootstrap
+            btn → Estilo de botão
+            btn-primary → Cor azul (primária)
+            btn-lg → Tamanho grande
+        - d-grid: Display grid (faz o botão ocupar toda a largura)
+        
+        Ícone: bi-box-arrow-in-right (seta entrando em uma caixa = login)
+    --}}
+    <div class="d-grid mb-3">
+        <button type="submit" class="btn btn-primary btn-lg">
+            <i class="bi bi-box-arrow-in-right me-2"></i>Entrar
+        </button>
+    </div>
+
+    {{!-- 
+        LINK PARA CRIAÇÃO DE CONTA
+        ===========================
+        - text-center: Centraliza o texto
+        - text-muted: Cor cinza (menos destaque)
+        - fw-bold: Fonte em negrito (font-weight: bold)
+        - text-decoration-none: Remove o sublinhado do link
+        
+        Oferece uma alternativa para quem ainda não tem conta.
+        Redireciona para GET /registro (AuthController.mostrarRegistro())
+    --}}
+    <div class="text-center">
+        <p class="text-muted mb-0">
+            Não tem uma conta? 
+            <a href="/registro" class="text-primary fw-bold text-decoration-none">
+                Criar conta gratuita
+            </a>
+        </p>
+    </div>
+</form>

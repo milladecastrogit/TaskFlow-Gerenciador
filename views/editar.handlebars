@@ -1,0 +1,247 @@
+{{!-- 
+    ==============================================================================
+    FORMULÁRIO DE EDIÇÃO DE TAREFA (UPDATE - Passo 1)
+    ==============================================================================
+    Esta view exibe um formulário PREENCHIDO com os dados atuais da tarefa.
+    O usuário pode modificar qualquer campo e salvar as alterações.
+    
+    Fluxo completo do UPDATE:
+    1. Usuário clica em "Editar" no card da tarefa
+    2. Navegador acessa GET /editar/:id (ex: /editar/3)
+    3. TarefaController.mostrarFormEdicao() busca a tarefa pelo ID
+    4. Se encontrada, renderiza ESTA view com os dados preenchidos
+    5. Usuário modifica os campos desejados
+    6. Ao clicar em "Atualizar", dados são enviados para POST /atualizar
+    7. TarefaController.atualizarTarefa() salva as alterações no banco
+    8. Redireciona para / com mensagem de sucesso
+    
+    Diferenças do formulário de cadastro:
+    - Campos já vêm PREENCHIDOS com os dados atuais (value="{{tarefa.titulo}}")
+    - Possui um campo HIDDEN com o ID da tarefa
+    - Envia para /atualizar em vez de /salvar
+    - Botão "Atualizar Tarefa" em vez de "Salvar Tarefa"
+    - Botão "Cancelar" em vez de "Voltar para Lista"
+    - Select já vem com a categoria atual selecionada
+    
+    A variável 'tarefa' contém os dados atuais:
+    - tarefa.id
+    - tarefa.titulo
+    - tarefa.descricao
+    - tarefa.categoria
+    ==============================================================================
+--}}
+
+{{!-- Título na aba do navegador --}}
+{{#*inline "tituloPagina"}}Editar Tarefa{{/inline}}
+
+{{!-- 
+    
+      CABEÇALHO DA PÁGINA 
+      --------------------------                                  
+    
+--}}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    
+    {{!-- Título da página --}}
+    <h1 class="h2">✏️ Editar Tarefa</h1>
+    
+    {{!-- 
+        BOTÃO "CANCELAR"
+        =================
+        - href="/": Retorna à lista sem salvar alterações
+        - btn-secondary: Botão cinza (ação neutra)
+        
+        Diferente do cadastro (que diz "Voltar para Lista"),
+        aqui diz "Cancelar" porque o usuário pode ter feito alterações
+        e está desistindo delas.
+    --}}
+    <a href="/" class="btn btn-secondary">Cancelar</a>
+</div>
+
+{{!-- Container centralizado (mesmo layout do cadastro) --}}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-body">
+                
+                {{!-- 
+                    
+                      FORMULÁRIO DE EDIÇÃO
+                      ----------------------                       
+                    
+                    
+                    - action="/atualizar": Rota que processa a atualização
+                    - method="post": Método POST (formulários HTML não suportam PUT)
+                    
+                    O controller que recebe esta requisição é:
+                    TarefaController.atualizarTarefa()
+                --}}
+                <form action="/atualizar" method="post">
+                    
+                    {{!-- 
+                        
+                          CAMPO OCULTO: ID DA TAREFA   
+                          ---------------------------                    
+                        
+                        
+                        type="hidden": Campo INVISÍVEL ao usuário.
+                        É enviado junto com os outros campos do formulário,
+                        mas não aparece na tela.
+                        
+                        POR QUE PRECISAMOS DISSO?
+                        O ID não está na URL do POST (a URL é /atualizar, sem :id).
+                        Precisamos de uma forma de dizer ao servidor QUAL tarefa
+                        estamos atualizando. O campo hidden resolve isso.
+                        
+                        name="id": Será enviado como req.body.id
+                        value="{{tarefa.id}}": Valor preenchido automaticamente
+                        
+                        Exemplo: Se a tarefa tem ID 5:
+                        <input type="hidden" name="id" value="5">
+                        
+                        Quando o formulário for enviado:
+                        req.body = { id: "5", titulo: "...", descricao: "...", categoria: "..." }
+                    --}}
+                    <input type="hidden" name="id" value="{{tarefa.id}}">
+
+                    {{!-- 
+                        
+                          CAMPO: TÍTULO (PREENCHIDO)  
+                          ------------------------------                     
+                        
+                        
+                        DIFERENÇA DO CADASTRO:
+                        - value="{{tarefa.titulo}}": O campo já vem preenchido
+                          com o título atual da tarefa.
+                        
+                        Exemplo: Se o título é "Reunião com o gerente",
+                        o input aparecerá com este texto digitado.
+                        
+                        O usuário pode modificar livremente.
+                    --}}
+                    <div class="mb-3">
+                        <label for="titulo" class="form-label">Título *</label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="titulo" 
+                            name="titulo" 
+                            value="{{tarefa.titulo}}" 
+                            required>
+                    </div>
+
+                    {{!-- 
+                        
+                          CAMPO: DESCRIÇÃO (PREENCHIDO)
+                          ---------------------------------                    
+                        
+                        
+                        DIFERENÇA DO CADASTRO:
+                        O textarea NÃO USA value="". Em vez disso, o texto
+                        é colocado ENTRE as tags de abertura e fechamento.
+                        
+                        <textarea>{{tarefa.descricao}}</textarea>
+                        
+                        Se a descrição for "Preparar apresentação do projeto",
+                        o textarea mostrará este texto.
+                        
+                        Se a descrição for null/vazia, o textarea ficará em branco.
+                        Isso é seguro porque o Handlebars renderiza null como string vazia.
+                    --}}
+                    <div class="mb-3">
+                        <label for="descricao" class="form-label">Descrição</label>
+                        <textarea 
+                            class="form-control" 
+                            id="descricao" 
+                            name="descricao" 
+                            rows="3">{{tarefa.descricao}}</textarea>
+                    </div>
+
+                    {{!-- 
+                        
+                          CAMPO: CATEGORIA (CATEGORIA ATUAL SELECIONADA)
+                          ----------------------------------------------    
+                        
+                        
+                        DIFERENÇA DO CADASTRO:
+                        Usamos o helper 'eq' para marcar como 'selected'
+                        a opção que corresponde à categoria atual da tarefa.
+                        
+                        LÓGICA PARA CADA OPÇÃO:
+                        {{#if (eq tarefa.categoria 'Trabalho')}}selected{{/if}}
+                        
+                        Se a categoria atual for 'Trabalho':
+                        <option value="Trabalho" selected>Trabalho</option>
+                        
+                        Se a categoria atual NÃO for 'Trabalho':
+                        <option value="Trabalho">Trabalho</option>
+                        
+                        Isso faz o select já aparecer com a categoria correta,
+                        evitando que o usuário precise selecionar novamente
+                        se não quiser mudar a categoria.
+                        
+                        Exemplo visual:
+                        Se a tarefa tem categoria "Faculdade":
+                        [Faculdade ▼]  (já selecionado)
+                         ├─ Trabalho
+                         ├─ Faculdade  ← selecionado
+                         └─ Pessoal
+                    --}}
+                    <div class="mb-3">
+                        <label for="categoria" class="form-label">Categoria *</label>
+                        <select class="form-select" id="categoria" name="categoria" required>
+                            
+                            {{!-- 
+                                Opção "Trabalho"
+                                Se a tarefa atual for da categoria Trabalho,
+                                o atributo 'selected' é adicionado.
+                            --}}
+                            <option value="Trabalho" {{#if (eq tarefa.categoria 'Trabalho')}}selected{{/if}}>
+                                Trabalho
+                            </option>
+                            
+                            {{!-- Opção "Faculdade" --}}
+                            <option value="Faculdade" {{#if (eq tarefa.categoria 'Faculdade')}}selected{{/if}}>
+                                Faculdade
+                            </option>
+                            
+                            {{!-- Opção "Pessoal" --}}
+                            <option value="Pessoal" {{#if (eq tarefa.categoria 'Pessoal')}}selected{{/if}}>
+                                Pessoal
+                            </option>
+                        </select>
+                    </div>
+                    
+                    {{!-- 
+                        
+                          BOTÃO DE ATUALIZAÇÃO (SUBMIT) 
+                          --------------------------------------                   
+                        
+                        
+                        - btn-warning: Cor amarela/laranja (indica modificação)
+                        - btn-lg: Tamanho grande
+                        - d-grid: Largura total
+                        
+                        Ícone: bi-arrow-repeat (seta circular = atualizar/sincronizar)
+                        
+                        Ao clicar:
+                        1. Navegador valida os campos (required)
+                        2. Envia ID + dados modificados para POST /atualizar
+                        3. Controller busca a tarefa pelo ID
+                        4. Atualiza os campos com os novos valores
+                        5. Redireciona para / com mensagem de sucesso
+                        
+                        Diferente do botão "Salvar Tarefa" (azul) do cadastro,
+                        este é amarelo para indicar que é uma ATUALIZAÇÃO,
+                        não uma criação nova.
+                    --}}
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-warning btn-lg">
+                            <i class="bi bi-arrow-repeat"></i> Atualizar Tarefa
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,250 @@
+{{!-- 
+    ==============================================================================
+    FORMULÁRIO DE CADASTRO DE TAREFA (CREATE - Passo 1)
+    ==============================================================================
+    Esta view exibe um formulário VAZIO para o usuário preencher
+    e criar uma nova tarefa no sistema.
+    
+    Fluxo completo do CREATE:
+    1. Usuário clica em "Nova Tarefa" (qualquer página)
+    2. Navegador acessa GET /cadastrar
+    3. TarefaController.mostrarFormCadastro() renderiza esta view
+    4. Usuário preenche título, descrição (opcional) e categoria
+    5. Ao clicar em "Salvar", os dados são enviados para POST /salvar
+    6. TarefaController.salvarTarefa() cria o registro no banco
+    7. Redireciona para / com mensagem de sucesso
+    
+    Campos do formulário:
+    - Título (obrigatório): Nome curto e descritivo da tarefa
+    - Descrição (opcional): Detalhes complementares
+    - Categoria (obrigatório): Trabalho, Faculdade ou Pessoal
+    
+    Validações:
+    - No navegador: required, select obrigatório
+    - No servidor: validações do Sequelize (notEmpty, isIn)
+    - No banco: constraints definidas no modelo Tarefa
+    ==============================================================================
+--}}
+
+{{!-- Título na aba do navegador --}}
+{{#*inline "tituloPagina"}}Cadastrar Nova Tarefa{{/inline}}
+
+{{!-- 
+    
+      CABEÇALHO DA PÁGINA 
+      ---------------------                                  
+    
+    
+    Layout flexível com:
+    - Título à esquerda: "Cadastrar Tarefa"
+    - Botão à direita: "Voltar para Lista"
+    
+    O botão "Voltar" oferece uma rota de fuga caso o usuário
+    desista de criar a tarefa.
+--}}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    
+    {{!-- 
+        TÍTULO DA PÁGINA
+        h2: Estilizado como título de segundo nível
+    --}}
+    <h1 class="h2">➕ Cadastrar Tarefa</h1>
+    
+    {{!-- 
+        BOTÃO "VOLTAR PARA LISTA"
+        ==========================
+        - href="/": Retorna à página inicial (lista de tarefas)
+        - btn-secondary: Botão cinza (ação neutra)
+        
+        Não salva nada, apenas navega de volta.
+    --}}
+    <a href="/" class="btn btn-secondary">Voltar para Lista</a>
+</div>
+
+{{!-- 
+    
+     CONTAINER DO FORMULÁRIO (CENTRALIZADO) 
+     --------------------------------------               
+    
+    
+    Centralizado e com largura limitada para melhor legibilidade:
+    - row justify-content-center: Centraliza horizontalmente
+    - col-md-8: Em telas médias, ocupa 8/12 colunas (≈67%)
+      Em telas pequenas, ocupa 100% (responsivo)
+--}}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        
+        {{!-- 
+            CARD DO FORMULÁRIO
+            ===================
+            shadow: Sombra para destaque visual
+            card-body: Padding interno do card
+        --}}
+        <div class="card shadow">
+            <div class="card-body">
+                
+                {{!-- 
+                    
+                    ║  FORMULÁRIO DE CRIAÇÃO                            
+                    
+                    
+                    - action="/salvar": URL para onde os dados são enviados
+                    - method="post": Método HTTP POST (dados no corpo da requisição)
+                    
+                    Quando o usuário clica em "Salvar Tarefa":
+                    1. O navegador coleta todos os campos com atributo 'name'
+                    2. Envia para POST /salvar
+                    3. req.body conterá: { titulo: "...", descricao: "...", categoria: "..." }
+                --}}
+                <form action="/salvar" method="post">
+                    
+                    {{!-- 
+                        
+                         CAMPO: TÍTULO (OBRIGATÓRIO) 
+                         ---------------------------------                     
+                        
+                        
+                        - type="text": Campo de texto simples
+                        - name="titulo": Nome do campo → req.body.titulo
+                        - required: Obrigatório (validação do navegador)
+                        - placeholder: Texto de exemplo que desaparece ao digitar
+                        
+                        form-text: Texto auxiliar abaixo do campo,
+                        dá uma dica ao usuário sobre o que preencher.
+                        
+                        Validação no modelo:
+                        - allowNull: false (não pode ser nulo no banco)
+                        - notEmpty: true (não pode ser string vazia)
+                    --}}
+                    <div class="mb-3">
+                        {{!-- 
+                            label for="titulo": Vinculado ao input id="titulo"
+                            Ao clicar no label, o foco vai para o input.
+                            O asterisco (*) indica campo obrigatório.
+                        --}}
+                        <label for="titulo" class="form-label">Título *</label>
+                        
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="titulo" 
+                            name="titulo" 
+                            placeholder="Ex: Reunião com o orientador" 
+                            required>
+                        
+                        {{!-- Texto de ajuda (dica) --}}
+                        <div class="form-text">Dê um nome curto e descritivo para sua tarefa.</div>
+                    </div>
+
+                    {{!-- 
+                        
+                          CAMPO: DESCRIÇÃO (OPCIONAL)   
+                          ----------------------------------                   
+                        
+                        
+                        Diferente do título, usamos <textarea> em vez de <input>.
+                        
+                        <textarea>: Caixa de texto multilinha.
+                        Ideal para textos mais longos como descrições.
+                        
+                        Atributos:
+                        - name="descricao": Nome do campo → req.body.descricao
+                        - rows="3": Altura inicial de 3 linhas de texto
+                        - Sem 'required': Campo opcional
+                        
+                        placeholder: Texto de exemplo que some ao digitar.
+                        
+                        Se o usuário deixar em branco:
+                        - req.body.descricao será string vazia ""
+                        - O Sequelize salvará como NULL no banco (allowNull: true)
+                    --}}
+                    <div class="mb-3">
+                        <label for="descricao" class="form-label">Descrição</label>
+                        
+                        <textarea 
+                            class="form-control" 
+                            id="descricao" 
+                            name="descricao" 
+                            rows="3" 
+                            placeholder="Descreva os detalhes da tarefa..."></textarea>
+                    </div>
+
+                    {{!-- 
+                        
+                          CAMPO: CATEGORIA (OBRIGATÓRIO - SELECT)          
+                        
+                        
+                        <select>: Menu suspenso (dropdown) com opções predefinidas.
+                        Diferente de um input livre, o usuário só pode escolher
+                        entre as opções listadas.
+                        
+                        - name="categoria": Nome do campo → req.body.categoria
+                        - required: Obrigatório
+                        - form-select: Classe Bootstrap que estiliza o select
+                        
+                        Opções:
+                        1. Placeholder desabilitado (selecionado por padrão, mas não enviável)
+                        2. Trabalho
+                        3. Faculdade
+                        4. Pessoal
+                        
+                        Validação no modelo:
+                        isIn: [['Trabalho', 'Faculdade', 'Pessoal']]
+                        Só aceita exatamente esses três valores.
+                    --}}
+                    <div class="mb-3">
+                        <label for="categoria" class="form-label">Categoria *</label>
+                        
+                        <select class="form-select" id="categoria" name="categoria" required>
+                            
+                            {{!-- 
+                                Opção placeholder:
+                                - value="": Valor vazio (não é aceito pelo required)
+                                - selected: Já aparece selecionada ao carregar a página
+                                - disabled: Não pode ser escolhida novamente após selecionar outra
+                                
+                                Isso força o usuário a escolher uma categoria real.
+                            --}}
+                            <option value="" selected disabled>--- Selecione a Categoria ---</option>
+                            
+                            {{!-- 
+                                Opções reais de categoria.
+                                O value é o que será enviado ao servidor.
+                                O texto entre as tags é o que aparece na tela.
+                            --}}
+                            <option value="Trabalho">Trabalho</option>
+                            <option value="Faculdade">Faculdade</option>
+                            <option value="Pessoal">Pessoal</option>
+                        </select>
+                    </div>
+                    
+                    {{!-- 
+                        
+                        BOTÃO DE ENVIO (SUBMIT)  
+                        --------------------------                        
+                        
+                        
+                        - type="submit": Envia o formulário ao ser clicado
+                        - btn-primary: Cor azul (ação principal)
+                        - btn-lg: Tamanho grande (destaque)
+                        - d-grid: Ocupa toda a largura do container
+                        
+                        Ícone: bi-save (disquete = salvar)
+                        
+                        Ao clicar:
+                        1. Validação do navegador (required, select)
+                        2. Envio para POST /salvar
+                        3. Controller cria o registro no banco
+                        4. Redireciona com mensagem de sucesso
+                    --}}
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-save"></i> Salvar Tarefa
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

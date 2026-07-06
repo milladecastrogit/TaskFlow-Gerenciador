@@ -1,0 +1,311 @@
+{{!-- 
+    ==============================================================================
+    PÁGINA INICIAL - LISTAGEM DE TAREFAS (READ - Todos)
+    ==============================================================================
+    Esta é a página principal do sistema, exibida após o login.
+    Mostra todas as tarefas cadastradas em cards organizados por categoria.
+    
+    Fluxo:
+    1. Usuário faz login → redirecionado para GET /
+    2. TarefaController.listarTarefas() busca todas as tarefas no banco
+    3. As tarefas são passadas para esta view como array 'tarefas'
+    4. Cada tarefa é renderizada em um card Bootstrap
+    
+    Funcionalidades disponíveis em cada card:
+    - Visualizar detalhes (olho)
+    - Editar (lápis)
+    - Excluir (lixeira) com confirmação
+    
+    Cores por categoria:
+    - Trabalho:   Amarelo (bg-warning)
+    - Faculdade:  Azul claro (bg-info)
+    - Pessoal:    Verde (bg-success)
+    ==============================================================================
+--}}
+
+{{!-- 
+    TÍTULO DA PÁGINA
+    Aparece na aba do navegador: "Lista de Tarefas | TaskFlow"
+--}}
+{{#*inline "tituloPagina"}}Lista de Tarefas{{/inline}}
+
+{{!-- 
+    ╔══════════════════════════════════════════════════════════╗
+    ║  CABEÇALHO DA PÁGINA                                   ║
+    ╚══════════════════════════════════════════════════════════╝
+    
+    Layout flexível com:
+    - Título à esquerda
+    - Botão "Nova Tarefa" à direita
+    
+    Classes Bootstrap:
+    - d-flex: Display flex (layout flexível)
+    - justify-content-between: Itens separados (um em cada ponta)
+    - align-items-center: Alinhados verticalmente ao centro
+    - mb-4: Margin-bottom (espaçamento abaixo do cabeçalho)
+--}}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    
+    {{!-- 
+        TÍTULO DA SEÇÃO
+        h2: Classe Bootstrap que estiliza como título de segundo nível
+    --}}
+    <h1 class="h2">📋 Minhas Tarefas</h1>
+    
+    {{!-- 
+        BOTÃO "NOVA TAREFA"
+        =====================
+        - href="/cadastrar": Link para o formulário de criação (GET /cadastrar)
+        - btn btn-success: Botão verde (indica ação positiva de adicionar)
+        
+        Ícone: bi-plus-lg (sinal de adição)
+        
+        Ao clicar, o usuário é levado ao formulário de cadastro
+        onde pode criar uma nova tarefa com título, descrição e categoria.
+    --}}
+    <a href="/cadastrar" class="btn btn-success">
+        <i class="bi bi-plus-lg"></i> Nova Tarefa
+    </a>
+</div>
+
+{{!-- 
+    ╔══════════════════════════════════════════════════════════╗
+    ║  VERIFICAÇÃO: EXISTEM TAREFAS?                         ║
+    ╚══════════════════════════════════════════════════════════╝
+    
+    {{#if tarefas.length}}
+    Handlebars verifica se o array 'tarefas' tem elementos.
+    
+    - Se SIM (length > 0): Renderiza os cards com as tarefas
+    - Se NÃO (length === 0): Mostra mensagem "Nenhuma tarefa cadastrada"
+    
+    'tarefas' é o array enviado pelo controller:
+    const tarefas = tarefasRaw.map(t => t.toJSON());
+--}}
+{{#if tarefas.length}}
+    
+    {{!-- 
+        ╔══════════════════════════════════════════════════════════╗
+        ║  GRID DE CARDS (SISTEMA DE GRID DO BOOTSTRAP)          ║
+        ╚══════════════════════════════════════════════════════════╝
+        
+        row: Cria uma linha do grid
+        row-cols-1: Em telas pequenas, 1 card por linha
+        row-cols-md-2: Em tablets (≥768px), 2 cards por linha
+        row-cols-lg-3: Em desktops (≥992px), 3 cards por linha
+        g-4: Espaçamento (gap) entre os cards
+        
+        Isso cria um layout responsivo:
+        - Celular:    1 coluna
+        - Tablet:     2 colunas
+        - Desktop:    3 colunas
+    --}}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        
+        {{!-- 
+            ╔══════════════════════════════════════════════════════════╗
+            ║  LOOP: PARA CADA TAREFA NO ARRAY                       ║
+            ╚══════════════════════════════════════════════════════════╝
+            
+            {{#each tarefas}}
+            Percorre o array 'tarefas' e repete o bloco abaixo
+            para cada elemento. A cada iteração, as variáveis da tarefa
+            atual ficam disponíveis: {{id}}, {{titulo}}, {{descricao}}, {{categoria}}
+            
+            Exemplo com 3 tarefas:
+            - Iteração 1: tarefa.id=1, tarefa.titulo="Reunião", ...
+            - Iteração 2: tarefa.id=2, tarefa.titulo="Estudar", ...
+            - Iteração 3: tarefa.id=3, tarefa.titulo="Academia", ...
+        --}}
+        {{#each tarefas}}
+        
+        {{!-- 
+            col: Cada card ocupa uma coluna do grid.
+            O Bootstrap calcula automaticamente a largura baseado no número de colunas.
+        --}}
+        <div class="col">
+            
+            {{!-- 
+                CARD DA TAREFA
+                ===============
+                - card: Container com bordas arredondadas e sombra
+                - h-100: Altura 100% (todos os cards na mesma linha ficam da mesma altura)
+                - shadow-sm: Sombra suave (efeito de profundidade)
+                
+                No style.css, adicionamos efeito hover:
+                .card:hover { transform: translateY(-5px); }
+                O card "salta" 5px para cima quando o mouse passa por cima.
+            --}}
+            <div class="card h-100 shadow-sm">
+                
+                {{!-- 
+                    ╔══════════════════════════════════════════════════════╗
+                    ║  CABEÇALHO DO CARD (COR POR CATEGORIA)             ║
+                    ╚══════════════════════════════════════════════════════╝
+                    
+                    card-header: Cabeçalho do card
+                    fw-bold: Texto em negrito (font-weight: bold)
+                    
+                    LÓGICA DE CORES (usando o helper 'eq'):
+                    SE categoria === 'Trabalho'  → Fundo amarelo (bg-warning), texto escuro
+                    SE categoria === 'Faculdade' → Fundo azul claro (bg-info), texto escuro
+                    SENÃO (Pessoal)              → Fundo verde (bg-success), texto branco
+                    
+                    O helper 'eq' foi definido no app.js:
+                    eq: (a, b) => a === b
+                    
+                    Exemplo de uso:
+                    {{#if (eq categoria 'Trabalho')}}
+                        Esta condição é TRUE se a categoria for exatamente 'Trabalho'
+                --}}
+                <div class="card-header fw-bold
+                    {{#if (eq categoria 'Trabalho')}}bg-warning text-dark
+                    {{else if (eq categoria 'Faculdade')}}bg-info text-dark
+                    {{else}}bg-success text-white{{/if}}">
+                    {{!-- Nome da categoria (ex: "Trabalho", "Faculdade", "Pessoal") --}}
+                    {{categoria}}
+                </div>
+                
+                {{!-- 
+                    CORPO DO CARD
+                    ==============
+                    - card-body: Área principal do card
+                    - d-flex: Layout flexível
+                    - flex-column: Itens empilhados verticalmente
+                    - flex-grow-1 (na descrição): Ocupa o espaço restante, empurrando os botões para baixo
+                --}}
+                <div class="card-body d-flex flex-column">
+                    
+                    {{!-- Título da tarefa (ex: "Reunião com o gerente") --}}
+                    <h5 class="card-title">{{titulo}}</h5>
+                    
+                    {{!-- 
+                        DESCRIÇÃO DA TAREFA
+                        ====================
+                        Usa o helper 'default' definido no app.js:
+                        default: (value, defaultValue) => value || defaultValue
+                        
+                        Se a descrição existir → mostra a descrição
+                        Se estiver vazia/null → mostra "Nenhuma descrição fornecida."
+                        
+                        flex-grow-1: Faz este parágrafo ocupar todo o espaço disponível,
+                        empurrando a div de botões para a parte inferior do card.
+                    --}}
+                    <p class="card-text flex-grow-1">
+                        {{default descricao 'Nenhuma descrição fornecida.'}}
+                    </p>
+                    
+                    {{!-- 
+                        ╔══════════════════════════════════════════════════════╗
+                        ║  BOTÕES DE AÇÃO (DETALHES, EDITAR, EXCLUIR)       ║
+                        ╚══════════════════════════════════════════════════════╝
+                        
+                        - d-flex: Layout flexível
+                        - justify-content-between: Espaço entre os botões
+                        - mt-3: Margin-top (espaçamento acima dos botões)
+                    --}}
+                    <div class="d-flex justify-content-between mt-3">
+                        
+                        {{!-- 
+                            BOTÃO "DETALHES" (READ INDIVIDUAL)
+                            ===================================
+                            - href="/tarefa/{{id}}": Link para a página de detalhes
+                              Exemplo: /tarefa/1, /tarefa/2, etc.
+                            - btn-outline-primary: Botão com borda azul, fundo transparente
+                            - btn-sm: Tamanho pequeno
+                            
+                            Ícone: bi-eye (olho = visualizar)
+                            
+                            Ao clicar, o controller busca a tarefa pelo ID
+                            e renderiza a view 'detalhes.handlebars'.
+                        --}}
+                        <a href="/tarefa/{{id}}" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-eye"></i> Detalhes
+                        </a>
+                        
+                        {{!-- Grupo de botões à direita (Editar + Excluir) --}}
+                        <div>
+                            
+                            {{!-- 
+                                BOTÃO "EDITAR" (UPDATE - PASSO 1)
+                                =================================
+                                - href="/editar/{{id}}": Link para o formulário de edição
+                                - btn-primary: Botão azul (cor primária)
+                                
+                                Ícone: bi-pencil-square (lápis = editar)
+                                
+                                Ao clicar:
+                                1. GET /editar/:id é acessado
+                                2. O controller busca a tarefa pelo ID
+                                3. Renderiza 'editar.handlebars' com os dados preenchidos
+                            --}}
+                            <a href="/editar/{{id}}" class="btn btn-primary btn-sm">
+                                <i class="bi bi-pencil-square"></i> Editar
+                            </a>
+                            
+                            {{!-- 
+                                BOTÃO "EXCLUIR" (DELETE)
+                                =========================
+                                ⚠️ CUIDADO: Esta ação é IRREVERSÍVEL!
+                                
+                                Envolvemos em um <form> com method="post" porque:
+                                - Formulários HTML só suportam GET e POST
+                                - DELETE não é suportado nativamente
+                                - Usamos POST como alternativa segura
+                                
+                                - action="/deletar/{{id}}": Rota que processa a exclusão
+                                - method="post": Dados enviados no corpo da requisição
+                                - style="display: inline;": Mantém o botão na mesma linha
+                                
+                                onclick="return confirm('...')":
+                                Exibe uma caixa de diálogo de confirmação no navegador.
+                                - Se o usuário clicar "OK" → retorna TRUE → formulário é enviado
+                                - Se clicar "Cancelar" → retorna FALSE → formulário NÃO é enviado
+                                
+                                \'{{titulo}}\': Aspas escapadas para incluir o título da tarefa
+                                na mensagem de confirmação. Exemplo:
+                                "Tem certeza que deseja excluir a tarefa 'Reunião com o gerente'?"
+                                
+                                btn-danger: Botão vermelho (indica ação perigosa/destrutiva)
+                                
+                                Ícone: bi-trash (lixeira = excluir)
+                            --}}
+                            <form action="/deletar/{{id}}" method="post" style="display: inline;">
+                                <button type="submit" class="btn btn-danger btn-sm" 
+                                        onclick="return confirm('Tem certeza que deseja excluir a tarefa \'{{titulo}}\'?')">
+                                    <i class="bi bi-trash"></i> Excluir
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{!-- Fim da iteração atual do #each --}}
+        {{/each}}
+        
+    </div>
+    
+{{else}}
+    {{!-- 
+        ╔══════════════════════════════════════════════════════════╗
+        ║  MENSAGEM: NENHUMA TAREFA CADASTRADA                   ║
+        ╚══════════════════════════════════════════════════════════╝
+        
+        Exibida apenas quando o array 'tarefas' está vazio.
+        É um estado inicial comum quando o usuário acabou de criar a conta.
+        
+        - alert: Classe base de alerta Bootstrap
+        - alert-info: Cor azul clara (informativo)
+        - text-center: Texto centralizado
+        - role="alert": Atributo de acessibilidade para leitores de tela
+        
+        Ícone: bi-info-circle (círculo com "i" de informação)
+        
+        Incentiva o usuário a criar sua primeira tarefa.
+    --}}
+    <div class="alert alert-info text-center" role="alert">
+        <i class="bi bi-info-circle me-2"></i>
+        Nenhuma tarefa cadastrada ainda. Clique em "Nova Tarefa" para começar!
+    </div>
+{{/if}}

@@ -1,0 +1,220 @@
+{{!-- 
+    ==============================================================================
+    TELA DE REGISTRO (CRIAÇÃO DE CONTA)
+    ==============================================================================
+    Esta view é renderizada DENTRO do layout 'auth.handlebars'.
+    Ela ocupa o lado DIREITO do card de autenticação (auth-form).
+    
+    Fluxo da página:
+    1. Usuário clica em "Criar conta gratuita" na tela de login
+    2. Navegador acessa GET /registro
+    3. AuthController.mostrarRegistro() é executado
+    4. Esta view é renderizada com o formulário em branco
+    5. Ao enviar, os dados vão para POST /registro (AuthController.registro())
+    
+    Campos do formulário:
+    - Nome completo (mínimo 2 caracteres)
+    - Email (formato válido, único no banco)
+    - Senha (mínimo 6 caracteres)
+    - Confirmar Senha (deve ser igual à senha)
+    
+    Validações:
+    - No navegador (frontend): required, minlength, type="email"
+    - No servidor (backend): senhas iguais, email único, validações Sequelize
+    - No banco (modelo): hook beforeSave criptografa a senha automaticamente
+    ==============================================================================
+--}}
+
+{{!-- 
+    DEFINIÇÃO DO LAYOUT
+    Usa o layout 'auth' (mesmo do login):
+    - Lado esquerdo: Logo + informações sobre o TaskFlow
+    - Lado direito: Este formulário de registro
+--}}
+{{#*inline "layout"}}auth{{/inline}}
+
+{{!-- 
+    TÍTULO DA PÁGINA
+    "Criar Conta" → O layout auth detecta que NÃO é 'Entrar'
+    e mostra o título "Crie sua conta" no formulário.
+--}}
+{{#*inline "tituloPagina"}}Criar Conta{{/inline}}
+
+{{!-- 
+    ╔══════════════════════════════════════════════════════════╗
+    ║  FORMULÁRIO DE REGISTRO                                ║
+    ╚══════════════════════════════════════════════════════════╝
+    
+    action="/registro": Envia para a rota POST /registro
+    method="post": Dados enviados no corpo da requisição (mais seguro)
+    
+    O AuthController.registro() vai:
+    1. Verificar se as senhas conferem
+    2. Verificar se o email já não existe no banco
+    3. Criar o usuário (senha criptografada automaticamente)
+    4. Fazer login automático (criar sessão)
+    5. Redirecionar para / com mensagem de boas-vindas
+--}}
+<form action="/registro" method="post">
+    
+    {{!-- 
+        CAMPO: NOME COMPLETO
+        =====================
+        - type="text": Campo de texto normal
+        - name="nome": Enviado como req.body.nome
+        - autofocus: Cursor pisca aqui ao carregar a página
+        - minlength="2": Validação HTML5 (mínimo 2 caracteres)
+        - form-text: Texto auxiliar abaixo do campo (Bootstrap)
+        
+        Ícone: bi-person-fill (silhueta de pessoa preenchida)
+        
+        Validação no modelo Usuario:
+        len: [2, 100] → Mínimo 2, máximo 100 caracteres
+    --}}
+    <div class="mb-3">
+        <label for="nome" class="form-label">
+            <i class="bi bi-person-fill me-1"></i>Nome Completo
+        </label>
+        <input 
+            type="text" 
+            class="form-control" 
+            id="nome" 
+            name="nome" 
+            placeholder="Seu nome completo" 
+            required
+            autofocus
+            minlength="2">
+        <div class="form-text">Mínimo de 2 caracteres.</div>
+    </div>
+
+    {{!-- 
+        CAMPO: EMAIL
+        =============
+        - type="email": Validação nativa de formato de email
+        - name="email": Enviado como req.body.email
+        
+        Ícone: bi-envelope-fill (envelope preenchido)
+        
+        Validações:
+        - No banco: unique: true (não permite emails duplicados)
+        - No modelo: isEmail: true (valida formato)
+        
+        Se o email já existir, o controller retorna:
+        "Este email já está cadastrado. Faça login ou use outro email."
+    --}}
+    <div class="mb-3">
+        <label for="email" class="form-label">
+            <i class="bi bi-envelope-fill me-1"></i>Email
+        </label>
+        <input 
+            type="email" 
+            class="form-control" 
+            id="email" 
+            name="email" 
+            placeholder="seu@email.com" 
+            required>
+    </div>
+
+    {{!-- 
+        CAMPO: SENHA
+        =============
+        - type="password": Caracteres ocultos (●●●●)
+        - name="senha": Enviado como req.body.senha
+        - minlength="6": Validação HTML5 (mínimo 6 caracteres)
+        
+        Ícone: bi-lock-fill (cadeado preenchido)
+        
+        Importante: Esta senha será CRIPTOGRAFADA antes de salvar.
+        O hook beforeSave no modelo Usuario faz isso automaticamente.
+        O banco NUNCA armazena a senha em texto puro.
+        
+        Validação no modelo:
+        len: [6, 100] → Mínimo 6 caracteres
+    --}}
+    <div class="mb-3">
+        <label for="senha" class="form-label">
+            <i class="bi bi-lock-fill me-1"></i>Senha
+        </label>
+        <input 
+            type="password" 
+            class="form-control" 
+            id="senha" 
+            name="senha" 
+            placeholder="Mínimo 6 caracteres" 
+            required
+            minlength="6">
+        <div class="form-text">Mínimo de 6 caracteres por segurança.</div>
+    </div>
+
+    {{!-- 
+        CAMPO: CONFIRMAR SENHA
+        ========================
+        - name="confirmarSenha": Enviado como req.body.confirmarSenha
+        - NÃO é salvo no banco, apenas validado no servidor
+        
+        Ícone: bi-shield-check-fill (escudo com verificação)
+        
+        Validação no servidor (AuthController.registro()):
+        if (senha !== confirmarSenha) {
+            retorna erro: "As senhas não conferem."
+        }
+        
+        Este campo ajuda a evitar erros de digitação na senha.
+        O usuário precisa digitar a mesma senha duas vezes.
+    --}}
+    <div class="mb-3">
+        <label for="confirmarSenha" class="form-label">
+            <i class="bi bi-shield-check-fill me-1"></i>Confirmar Senha
+        </label>
+        <input 
+            type="password" 
+            class="form-control" 
+            id="confirmarSenha" 
+            name="confirmarSenha" 
+            placeholder="Repita sua senha" 
+            required
+            minlength="6">
+    </div>
+
+    {{!-- 
+        BOTÃO DE CRIAR CONTA (SUBMIT)
+        ==============================
+        - btn-success: Cor verde (indica ação positiva de criação)
+        - btn-lg: Tamanho grande
+        - d-grid: Ocupa toda a largura disponível
+        
+        Ícone: bi-person-plus-fill (pessoa com sinal de adição)
+        
+        Ao clicar:
+        1. O navegador valida os campos (required, minlength, type)
+        2. Se tudo ok, envia para POST /registro
+        3. O servidor processa e cria a conta
+        4. Login automático e redirecionamento
+    --}}
+    <div class="d-grid mb-3">
+        <button type="submit" class="btn btn-success btn-lg">
+            <i class="bi bi-person-plus-fill me-2"></i>Criar Conta
+        </button>
+    </div>
+
+    {{!-- 
+        LINK PARA TELA DE LOGIN
+        ========================
+        Para usuários que já têm conta e acessaram o registro por engano.
+        
+        - text-center: Centraliza o parágrafo
+        - text-muted: Cor cinza (menos destaque que o botão)
+        - fw-bold: Negrito no link
+        - text-decoration-none: Remove sublinhado
+        
+        Redireciona para GET /login
+    --}}
+    <div class="text-center">
+        <p class="text-muted mb-0">
+            Já tem uma conta? 
+            <a href="/login" class="text-primary fw-bold text-decoration-none">
+                Fazer login
+            </a>
+        </p>
+    </div>
+</form>

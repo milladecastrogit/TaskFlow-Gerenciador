@@ -1,0 +1,468 @@
+/* ==============================================================================
+   ESTILOS PERSONALIZADOS - TASKFLOW
+   ==============================================================================
+   Este arquivo contém TODOS os estilos CSS personalizados do sistema.
+   O Bootstrap fornece a base (grid, botões, cards, etc.),
+   e aqui fazemos os ajustes visuais específicos do TaskFlow.
+   
+   Organização do arquivo:
+   1. Fundo e container da tela de autenticação
+   2. Card principal (dividido em duas colunas)
+   3. Lado esquerdo: informações sobre o TaskFlow
+   4. Lado direito: formulário de login/registro
+   5. Página principal (área logada com tarefas)
+   6. Navbar e elementos de navegação
+   7. Animações e efeitos visuais
+   8. Responsividade (adaptação para telas menores)
+   ============================================================================== */
+
+/* ==============================================================================
+   1. FUNDO COM IMAGEM (TELA DE LOGIN E REGISTRO)
+   ============================================================================== */
+.auth-container {
+    /* Ocupa 100% da altura da janela do navegador */
+    min-height: 100vh;
+    
+    /* Flexbox: sistema de layout unidimensional */
+    display: flex;
+    
+    /* Centraliza verticalmente (eixo principal do flex) */
+    align-items: center;
+    
+    /* Centraliza horizontalmente (eixo secundário do flex) */
+    justify-content: center;
+    
+    /* 
+        BACKGROUND COM IMAGEM
+        ======================
+        - url('/img/background-task.png'): Caminho da imagem de fundo.
+          A pasta 'public' é a raiz dos arquivos estáticos.
+          Então '/img/background-task.png' = 'public/img/background-task.png'
+        
+        - no-repeat: Não repete a imagem (aparece uma única vez)
+        
+        - center center: Posiciona a imagem centralizada tanto
+          horizontalmente quanto verticalmente
+        
+        - fixed: A imagem fica FIXA no fundo enquanto o conteúdo rola.
+          Cria um efeito parallax sutil.
+        
+        - background-size: cover: A imagem cobre TODO o container,
+          cortando as bordas se necessário para preencher o espaço.
+          Mantém a proporção original da imagem.
+    */
+    background: url('/img/background-task.png') no-repeat center center fixed;
+    background-size: cover;
+    
+    /* Espaçamento interno para telas muito pequenas */
+    padding: 20px;
+}
+
+/* ==============================================================================
+   2. CARD PRINCIPAL DA AUTENTICAÇÃO
+   ============================================================================== */
+.auth-card {
+    /* Ocupa 100% da largura disponível... */
+    width: 100%;
+    /* ...mas no máximo 900px (não fica exageradamente largo em telas grandes) */
+    max-width: 900px;
+    
+    /* Remove a borda padrão do card Bootstrap */
+    border: none;
+    
+    /* Bordas bem arredondadas (cantos suaves) */
+    border-radius: 20px;
+    
+    /* overflow: hidden: Tudo que ultrapassar as bordas do card é cortado.
+       Necessário para que o border-radius funcione nos elementos filhos. */
+    overflow: hidden;
+    
+    /* Sombra pronunciada para destacar o card do fundo */
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+    
+    /* Fundo branco (por cima da imagem de background) */
+    background: white;
+    
+    /* Flexbox para dividir o card em duas colunas (lado a lado) */
+    display: flex;
+    
+    /* Direção: linha (colunas lado a lado, padrão) */
+    flex-direction: row;
+    
+    /* Permite que os itens quebrem para a linha de baixo
+       em telas menores (junto com min-width nos filhos) */
+    flex-wrap: wrap;
+}
+
+/* ==============================================================================
+   3. LADO ESQUERDO: INFORMAÇÕES SOBRE O TASKFLOW
+   ============================================================================== */
+.auth-info {
+    /* 
+        FUNDO GRADIENTE
+        ================
+        Degradê diagonal (135 graus) que vai do azul (#0d6efd) ao roxo (#6610f2).
+        São as mesmas cores da logo do TaskFlow, criando identidade visual coesa.
+        
+        135deg: Ângulo da transição (canto superior esquerdo → inferior direito)
+        0%: Início do gradiente (azul)
+        100%: Fim do gradiente (roxo)
+    */
+    background: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%);
+    
+    /* Texto branco (contraste com o fundo escuro) */
+    color: white;
+    
+    /* 
+        FLEX BASIS: 40%
+        =================
+        flex: 1 1 40% significa:
+        - flex-grow: 1 (pode crescer para ocupar espaço extra)
+        - flex-shrink: 1 (pode encolher se necessário)
+        - flex-basis: 40% (tamanho inicial ideal = 40% da largura)
+    */
+    flex: 1 1 40%;
+    
+    /* Largura mínima: não deixa o bloco ficar muito estreito */
+    min-width: 280px;
+    
+    /* Espaçamento interno confortável */
+    padding: 40px 30px;
+    
+    /* Flexbox para centralizar o conteúdo interno */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    
+    /* Inclui padding e border no cálculo da largura total */
+    box-sizing: border-box;
+}
+
+/* 
+    LOGO REDONDA COM SOMBRA
+    ========================
+    Container circular branco que envolve a imagem da logo.
+    Cria um efeito de "selo" ou "medalha" destacado do fundo gradiente.
+*/
+.auth-info .logo-redonda {
+    /* Tamanho do círculo (200x200 pixels) */
+    width: 200px;
+    height: 200px;
+    
+    /* 
+        border-radius: 10%
+        ==================
+        Deixa os cantos levemente arredondados (10% de 200px = 20px).
+        Se fosse 50%, seria um círculo perfeito (100px de raio).
+        Com 10%, fica um quadrado com bordas suavemente arredondadas.
+    */
+    border-radius: 10%;
+    
+    /* Fundo branco atrás da logo */
+    background-color: white;
+    
+    /* Centraliza a imagem dentro do container */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* Espaçamento abaixo da logo */
+    margin-bottom: 20px;
+    
+    /* Sombra: deslocamento X=0, Y=8px, blur=25px, cor preta com 30% de opacidade */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    
+    /* Corta a imagem se ela ultrapassar o border-radius */
+    overflow: hidden;
+    
+    /* Espaço interno MÍNIMO entre a borda e a imagem (aumenta a logo dentro do círculo) */
+    padding: 1px;
+    
+    /* Inclui padding no cálculo da largura total */
+    box-sizing: border-box;
+}
+
+/* Imagem da logo DENTRO do container redondo */
+.auth-info .logo-redonda img {
+    /* 
+        Aumenta a imagem para 180% do tamanho do container.
+        Isso faz a logo preencher melhor o espaço disponível.
+        Ajuste este valor conforme necessário:
+        - 100% = tamanho normal
+        - 180% = bem maior (preenche quase todo o círculo)
+        - 200% = pode cortar bordas da imagem
+    */
+    width: 180%;
+    height: 180%;
+    
+    /* 
+        object-fit: contain
+        ====================
+        Mantém a proporção original da imagem.
+        A imagem é redimensionada para caber DENTRO do container,
+        sem ser cortada ou distorcida.
+        
+        Alternativas:
+        - cover: Preenche todo o container, cortando o que sobrar
+        - fill: Distorce para preencher (não recomendado)
+        - contain: Mantém proporção (recomendado para logos)
+    */
+    object-fit: contain;
+}
+
+/* Título "TaskFlow" no lado esquerdo */
+.auth-info h2 {
+    font-size: 28px;        /* Tamanho da fonte */
+    font-weight: 700;       /* Peso da fonte (700 = negrito forte) */
+    margin-bottom: 5px;     /* Espaçamento abaixo do título */
+}
+
+/* Subtítulo "Gerenciador de Tarefas" */
+.auth-info .sistema-nome {
+    font-size: 14px;                /* Fonte menor que o título */
+    opacity: 0.8;                   /* Levemente transparente (80% de opacidade) */
+    margin-bottom: 20px;            /* Espaçamento abaixo */
+    letter-spacing: 2px;            /* Espaçamento entre letras (efeito "respirado") */
+    text-transform: uppercase;      /* TUDO EM MAIÚSCULAS */
+}
+
+/* Texto "Sobre" o TaskFlow (descrição do sistema) */
+.auth-info .sobre-texto {
+    font-size: 14px;            /* Tamanho de fonte legível */
+    line-height: 1.8;           /* Espaçamento entre linhas (1.8x o tamanho da fonte) */
+                                /* 1.8 é confortável para leitura de parágrafos */
+    
+    text-align: justify;        /* Texto JUSTIFICADO: alinhado à esquerda E à direita */
+                                /* Cria um bloco de texto uniforme, como em livros */
+    
+    opacity: 0.9;               /* 90% de opacidade (quase totalmente visível) */
+    max-width: 100%;            /* Não ultrapassa a largura do container pai */
+}
+
+/* ==============================================================================
+   4. LADO DIREITO: FORMULÁRIO DE LOGIN/REGISTRO
+   ============================================================================== */
+.auth-form {
+    /* Ocupa 60% da largura (complemento dos 40% do lado esquerdo) */
+    flex: 1 1 60%;
+    
+    /* Largura mínima para o formulário não ficar espremido */
+    min-width: 300px;
+    
+    /* Espaçamento interno */
+    padding: 40px 35px;
+    
+    /* Flexbox para centralizar o formulário verticalmente */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    
+    box-sizing: border-box;
+}
+
+/* Título do formulário ("Bem-vindo de volta!" ou "Crie sua conta") */
+.auth-form h3 {
+    font-weight: 700;           /* Negrito forte */
+    color: #212529;             /* Cinza escuro (quase preto) do Bootstrap */
+    margin-bottom: 5px;
+}
+
+/* Subtítulo do formulário ("Faça login..." ou "Comece a organizar...") */
+.auth-form .form-subtitle {
+    color: #6c757d;             /* Cinza médio (text-muted do Bootstrap) */
+    font-size: 14px;
+    margin-bottom: 25px;        /* Espaçamento maior antes dos campos */
+}
+
+/* ==============================================================================
+   5. PÁGINA PRINCIPAL (ÁREA LOGADA - LISTA DE TAREFAS)
+   ============================================================================== */
+
+/*
+    FUNDO DA ÁREA LOGADA
+    =====================
+    A classe 'bg-light' é aplicada no <body> do layout main.
+    Aqui sobrescrevemos o fundo cinza claro padrão do Bootstrap
+    pela nossa imagem de background com uma camada branca por cima.
+    
+    !important: Necessário para sobrescrever o estilo do Bootstrap.
+*/
+body.bg-light {
+    /* Mesma imagem da tela de login */
+    background: url('/img/background-task.png') no-repeat center center fixed !important;
+    background-size: cover !important;
+    
+    /* Para o pseudo-elemento ::before funcionar como overlay */
+    position: relative;
+    
+    /* Garante altura mínima da tela cheia */
+    min-height: 100vh;
+}
+
+/*
+    PSEUDO-ELEMENTO ::BEFORE
+    =========================
+    Cria uma camada BRANCA SEMITRANSPARENTE sobre a imagem de fundo.
+    Isso "suaviza" a imagem para que o conteúdo (cards, textos)
+    tenha contraste e legibilidade.
+    
+    ::before cria um elemento virtual ANTES do conteúdo do <body>.
+    Não precisa de HTML extra, é puro CSS.
+*/
+body.bg-light::before {
+    content: '';                /* Obrigatório para pseudo-elementos existirem */
+    
+    position: fixed;            /* Fixo na tela (não rola com a página) */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    
+    /* Branco com 92% de opacidade (8% de transparência).
+       Ajuste este valor:
+       - 0.95 = mais opaco (imagem quase não aparece)
+       - 0.85 = mais transparente (imagem mais visível)
+       - 0.92 = equilibrado (imagem sutil ao fundo)
+    */
+    background: rgba(255, 255, 255, 0.92);
+    
+    /* z-index negativo coloca a camada ATRÁS do conteúdo */
+    z-index: -1;
+}
+
+/* ==============================================================================
+   6. CARDS DE TAREFA (LISTAGEM)
+   ============================================================================== */
+
+/*
+    EFEITO HOVER NOS CARDS
+    =======================
+    Transição suave quando o mouse passa sobre o card.
+    O card "salta" 5px para cima e a sombra aumenta.
+*/
+.card {
+    /* 
+        transition: Propriedade que define a animação.
+        - transform: 0.2s (aplica ao transform, duração 0.2 segundos)
+        - box-shadow: 0.2s (aplica à sombra, duração 0.2 segundos)
+        - ease: Curva de animação suave (começa rápido, termina devagar)
+    */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Estado HOVER (mouse passando por cima) */
+.card:hover {
+    /* 
+        transform: translateY(-5px)
+        Move o card 5 pixels para CIMA (negativo = para cima).
+        Cria o efeito de "flutuação".
+    */
+    transform: translateY(-5px);
+    
+    /* 
+        Sombra mais forte e mais espalhada que o normal.
+        Dá a impressão de que o card está mais distante do fundo.
+        
+        !important: Necessário porque o Bootstrap inline (shadow-sm)
+        tem alta especificidade.
+    */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Container do círculo branco na navbar */
+.navbar .navbar-brand {
+    display: flex;
+    align-items: center;
+}
+
+/* Círculo branco que envolve a logo */
+.navbar .logo-nav-container {
+    width: 40px;
+    height: 40px;
+    border-radius: 10%;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 1px;
+    box-sizing: border-box;
+    margin-right: 8px;
+}
+
+/* Imagem da logo DENTRO do círculo - AQUI VOCÊ AJUSTA O TAMANHO */
+.navbar .logo-nav-container img {
+    width: 180%;
+    height: 180%;
+    object-fit: contain;
+}
+/* ==============================================================================
+   8. ANIMAÇÕES
+   ============================================================================== */
+
+/*
+    ANIMAÇÃO DOS ALERTAS (MENSAGENS DE FEEDBACK)
+    ============================================
+    Quando uma mensagem aparece, ela "desliza" de cima para baixo
+    com um efeito de fade in (surgir gradualmente).
+*/
+.alert {
+    /* Aplica a animação 'fadeIn' definida abaixo */
+    animation: fadeIn 0.5s ease;
+}
+
+/*
+    DEFINIÇÃO DA ANIMAÇÃO FADEIN
+    =============================
+    @keyframes: Define os estágios (keyframes) de uma animação CSS.
+    
+    from (0%): Estado INICIAL da animação
+    to (100%): Estado FINAL da animação
+    
+    A animação dura 0.5 segundos (definido em animation acima).
+*/
+@keyframes fadeIn {
+    from {
+        opacity: 0;                      /* Começa INVISÍVEL (transparente) */
+        transform: translateY(-10px);    /* Começa 10px ACIMA da posição final */
+    }
+    to {
+        opacity: 1;                      /* Termina VISÍVEL (opaco) */
+        transform: translateY(0);        /* Termina na posição normal */
+    }
+}
+
+/* ==============================================================================
+   9. RESPONSIVIDADE (TELAS PEQUENAS)
+   ============================================================================== */
+
+/*
+    MEDIA QUERY: @media (max-width: 768px)
+    =======================================
+    As regras dentro deste bloco só se aplicam quando a largura da tela
+    for MENOR ou IGUAL a 768 pixels (tablets e celulares).
+    
+    Objetivo: Em telas pequenas, as duas colunas (Sobre + Formulário)
+    se EMPILHAM verticalmente em vez de ficarem lado a lado.
+*/
+@media (max-width: 768px) {
+    
+    /* Muda o card para coluna (itens empilhados) */
+    .auth-card {
+        flex-direction: column;     /* Um abaixo do outro */
+    }
+    
+    /* Lado esquerdo ocupa 100% da largura */
+    .auth-info {
+        flex: 1 1 100%;             /* 100% da largura */
+        padding: 30px 20px;         /* Menos padding em telas pequenas */
+    }
+    
+    /* Lado direito também ocupa 100% */
+    .auth-form {
+        flex: 1 1 100%;             /* 100% da largura */
+        padding: 30px 25px;         /* Padding ajustado */
+    }
+}
