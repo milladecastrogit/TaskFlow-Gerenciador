@@ -1,3 +1,5 @@
+> ⚠️ **Este é um projeto Node.js/Express e NÃO funciona no GitHub Pages.**
+> Para executar localmente, clone o repositório e siga as instruções abaixo.
 ## TaskFlow - Gerenciador de Tarefas Acadêmicas e Profissionais
 
 ![Badge de Status](https://img.shields.io/badge/status-MVP%20Acadêmico-blue)
