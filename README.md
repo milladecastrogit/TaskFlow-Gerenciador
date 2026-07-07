@@ -29,7 +29,7 @@
 
 # Sobre o Projeto
 
-O **TaskFlow** foi desenvolvido como material didático para apresentações acadêmicas de Desenvolvimento de Sistemas. O código é **100% comentado linha a linha**, explicando cada conceito e decisão técnica.
+O **Task Flow** foi desenvolvido como material didático para apresentações acadêmicas de Desenvolvimento de Sistemas. O código é **100% comentado linha a linha**, explicando cada conceito e decisão técnica.
 
 ### Abordagem
 
