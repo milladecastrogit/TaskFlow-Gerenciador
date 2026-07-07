@@ -22,14 +22,14 @@
 ### Página de Tarefas
 *Cards organizados por categoria (Trabalho, Faculdade, Pessoal) com ações de CRUD.*
 
-### Design Responsivo
+###Design Responsivo
 *Interface adaptável para desktop, tablet e mobile graças ao sistema grid do Bootstrap.*
 
 ---
 
 # Sobre o Projeto
 
-O **Task Flow** foi desenvolvido como material didático para apresentações acadêmicas de Desenvolvimento de Sistemas. O código é **100% comentado linha a linha**, explicando cada conceito e decisão técnica.
+O **TaskFlow** foi desenvolvido como material didático para apresentações acadêmicas de Desenvolvimento de Sistemas. O código é **100% comentado linha a linha**, explicando cada conceito e decisão técnica.
 
 ### Abordagem
 
